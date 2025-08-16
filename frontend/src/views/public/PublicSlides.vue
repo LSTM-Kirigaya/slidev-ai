@@ -3,10 +3,10 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
-import DataView from 'primevue/dataview'
 import Message from 'primevue/message'
 import Skeleton from 'primevue/skeleton'
 import { API_BASE_URL } from '@/utils/api'
+import { useToast } from 'primevue'
 
 interface Slide {
     id: string
@@ -95,6 +95,9 @@ const loadMoreTrigger = (el: Element) => {
         observer.observe(el)
     }
 }
+
+const toast = useToast();
+
 </script>
 
 <template>

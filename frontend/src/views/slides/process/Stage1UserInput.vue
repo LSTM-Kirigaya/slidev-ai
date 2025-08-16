@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 import Button from 'primevue/button';
@@ -9,8 +9,13 @@ import Card from 'primevue/card';
 import Message from 'primevue/message';
 import Dropdown from 'primevue/dropdown';
 import FileUpload from 'primevue/fileupload';
+import ProcessSteps from '@/components/ProcessSteps.vue';
 import { API_BASE_URL } from '@/utils/api';
 import axios from 'axios';
+
+const emit = defineEmits<{
+  (e: 'complete', slideId: number): void;
+}>();
 
 const router = useRouter()
 const title = ref('')
@@ -82,7 +87,8 @@ const createSlide = async () => {
             }
         });
 
-        router.push(`/slides/process?id=${response.data.id}&stage=outline`)
+        // 触发完成事件，传递创建的slide ID
+        emit('complete', response.data.id)
     } catch (err: any) {
         console.error('Create slide error:', err)
         if (err.response && err.response.status === 401) {
@@ -108,10 +114,6 @@ const createSlide = async () => {
     }
 }
 
-const cancel = () => {
-    router.push('/dashboard')
-}
-
 // Add example outline to help users
 const addExample = () => {
     content.value = `Introduction to Slidev AI:
@@ -130,12 +132,19 @@ Getting started:
 - Share with your team
 `
 }
+
+onMounted(() => {
+  // 组件挂载时可以执行一些初始化操作
+})
 </script>
 
 <template>
     <div class="create-slide p-4">
+        <ProcessSteps :currentStep="1" />
+
         <div class="header mb-4">
             <h1>Create New Slide</h1>
+            <p class="text-600">Enter the basic information for your presentation</p>
         </div>
 
         <Card>
@@ -197,9 +206,9 @@ Getting started:
                     </div>
 
                     <div class="flex justify-content-end gap-2">
-                        <Button type="button" @click="cancel" label="Cancel" severity="secondary" :disabled="loading" />
-                        <Button type="submit" :label="loading ? 'Creating...' : 'Create Slide'" :disabled="loading"
-                            icon="pi pi-check" />
+                        <Button type="button" @click="$router.push('/dashboard')" label="Cancel" severity="secondary" :disabled="loading" />
+                        <Button type="submit" :label="loading ? 'Creating...' : 'Continue to Outline'" :disabled="loading"
+                            icon="pi pi-arrow-right" iconPos="right" />
                     </div>
                 </form>
             </template>

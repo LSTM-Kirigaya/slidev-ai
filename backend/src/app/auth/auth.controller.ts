@@ -19,14 +19,56 @@ export class AuthController {
     @HttpCode(200)
     @Post('login')
     async login(
+        @Req() req: Request,
         @Res({ passthrough: true }) res: Response,
         @Body() loginDto?: { username: string; password: string }
     ) {
+        // 检查是否存在有效的 JWT cookie
+        const token = req.cookies?.jwt;
+        if (token) {
+            try {
+                // 验证 token 是否有效
+                const payload = this.jwtService.verify(token);
+                const user = await this.authService.validateUserById(payload.sub);
+                if (user) {
+                    return {
+                        success: true,
+                        message: 'Already logged in',
+                        user
+                    };
+                }
+
+                res.clearCookie('jwt', {
+                    httpOnly: true,
+                    sameSite: 'lax',
+                });
+                return {
+                    success: false,
+                    message: 'Invalid token',
+                    user
+                };
+            } catch (e) {
+                // token 无效，继续正常登录流程
+                res.clearCookie('jwt', {
+                    httpOnly: true,
+                    sameSite: 'lax',
+                });
+                return {
+                    success: false,
+                    message: 'Invalid token',
+                    user: null
+                };
+            }
+        }
 
         if (!loginDto) {
+            res.clearCookie('jwt', {
+                httpOnly: true,
+                sameSite: 'lax',
+            });
             return {
                 success: false,
-                message: 'Invalid token',
+                message: 'Invalid token and no login data provided',
                 user: null
             };
         }
@@ -63,7 +105,6 @@ export class AuthController {
         res.clearCookie('jwt', {
             httpOnly: true,
             sameSite: 'lax',
-            // secure: true, // 生产环境建议开启
         });
 
         return { success: true, message: 'Logged out successfully' };

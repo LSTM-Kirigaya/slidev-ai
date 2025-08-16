@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted,watch } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
 
-// PrimeVue components
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import DataView from 'primevue/dataview'
 import Message from 'primevue/message'
 import Dropdown from 'primevue/dropdown'
 import { API_BASE_URL } from '@/utils/api'
+import axios from 'axios'
 
 const router = useRouter()
 const slides = ref([])
@@ -45,7 +44,7 @@ const fetchSlides = async () => {
 }
 
 const createNewSlide = () => {
-    router.push('/slides/create')
+    router.push('/slides/process?stage=input')
 }
 
 const viewSlide = (hash: string) => {
@@ -167,5 +166,10 @@ watch(visibility, () => {
     padding: 2rem;
     border-radius: 8px;
     background-color: #f8f9fa;
+}
+
+.my-app-dark .no-slides-message {
+    background-color: #222222;
+    color: #ffffff;
 }
 </style>
