@@ -1,86 +1,82 @@
-# Slidev AI
+<div align="center">
 
-![Slidev AI Logo](frontend/src/assets/icons/slidev-ai.svg)
 
-A web application that allows users to create, manage, and modify Slidev presentations through an AI-powered interface.
+<img src="frontend/src/assets/icons/slidev-ai.svg" height="200px" />
 
-## Features
+<a href="https://github.com/LSTM-Kirigaya/slidev-ai"> <img src="https://img.shields.io/github/stars/LSTM-Kirigaya/slidev-ai?style=social" alt="GitHub Stars"></a><a href="https://opensource.org/licenses/MIT"> <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License"></a><a href="https://kirigaya.cn/openmcp/"> <img src="https://img.shields.io/badge/OpenMCP_SDK-0.1.0-blue" alt="License"></a>
 
-- User authentication (registration and login)
-- Create Slidev presentations from outlines using AI
-- Manage existing presentations
-- Preview presentations with unique URLs
+<h3>Slidev AI - AI-Powered Presentation Creation Platform</h3>
 
-## Tech Stack
+**Transform your ideas into stunning presentations with AI assistance**
 
-### Frontend
-- Vue 3 + TypeScript
-- Vue Router
-- Pinia (state management)
-- Axios (HTTP client)
+</div>
 
-### Backend
-- NestJS + TypeScript
-- SQLite (database)
-- TypeORM (ORM)
-- Passport.js (authentication)
-- JWT (token-based auth)
 
-## Project Structure
+
+## 🚀 Overview
+
+Slidev-AI is a web app that leverages LLM (Large Language Model) technology to make creating Slidev-based online presentations elegant and effortless. It is designed to help engineers and academics quickly produce content-focused, minimalist PPTs that are easily shareable online.
+
+> This project is also my submission for the [ModelScope MCP&Agent Competition](https://modelscope.cn/active/aihackathon-mcp-agent).
+
+slidev-ai is a downstream implementation within the [OpenMCP](https://github.com/LSTM-Kirigaya/openmcp-client) ecosystem, demonstrating how developers can build specialized agents using OpenMCP's powerful framework. This project serves as:
+
+- A reference implementation for OpenMCP agent development
+- A production-ready presentation generation solution
+- A template for creating domain-specific AI agents
+
+🔗 [OpenMCP Document](https://kirigaya.cn/openmcp/)
+
+## 💡 AI-Powered Project Generation Prompt
+
+For developers looking to create similar AI-powered applications, here's a comprehensive prompt you can use with LLM to generate a similar website project:
 
 ```
-slidev-ai/
-├── frontend/          # Vue 3 frontend
-│   ├── src/
-│   │   ├── components/  # Vue components
-│   │   ├── views/       # Page views
-│   │   ├── router/      # Routing configuration
-│   │   └── main.ts      # App entry point
-│   └── package.json     # Frontend dependencies
-└── backend/           # NestJS backend
-    ├── src/
-    │   ├── auth/        # Authentication module
-    │   ├── users/       # User management
-    │   ├── slides/      # Slide management
-    │   └── main.ts      # App entry point
-    └── package.json     # Backend dependencies
+
 ```
 
 ## Getting Started
 
-### Prerequisites
-- Node.js (v16 or higher)
-- npm or yarn
+### System Requirements
+- Node.js v18+
+- Python 3.10+
+- npm 9+ or yarn 1.22+
+- 4GB RAM minimum (8GB recommended for development)
 
-### Installation
+### Quick Installation
 
-1. Install backend dependencies:
-```bash
-cd backend
-npm install
+```
+# TODO
+npx -c ...
 ```
 
-2. Install frontend dependencies:
-```bash
-cd frontend
-npm install
-```
-
-### Running the Application
+### Development
 
 ```bash
+git clone https://github.com/yourorg/slidev-ai.git
+cd slidev-ai
+npm i
 npm run dev
 ```
 
+The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:3001
 
-The backend will be running on http://localhost:3001
-The frontend will be running on http://localhost:3000
+## 🤝 Contributing
 
+We welcome contributions from the community! Please see our [Contribution Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) for details.
 
-## Database
+## 📜 License
 
-This project uses SQLite for data storage. The database file (`database.sqlite`) will be automatically created when you run the application for the first time.
+Slidev AI is open-source software licensed under the **MIT License** with additional terms for commercial use. See [LICENSE](LICENSE) for full details.
 
-## License
+## 🌍 Community & Support
 
-MIT
+If you seek for tech support and deeper understanding of Slidev AI, please join our OpenMCP qq group:
+
+<div align="center"> <a href="https://qm.qq.com/cgi-bin/qm/qr?k=C6ZUTZvfqWoI12lWe7L93cWa1hUsuVT0&jump_from=webapi&authKey=McW6B1ogTPjPDrCyGttS890tMZGQ1KB3QLuG4aqVNRaYp4vlTSgf2c6dMcNjMuBD" target="_blank" > <img src="https://img.icons8.com/color/24/000000/qq.png" style="vertical-align: middle; margin-right: 8px;" alt="QQ"> OpenMCP Developer Group </a> </div>
+
+---
+
+*"From concept to presentation in minutes"* - The Slidev AI Team

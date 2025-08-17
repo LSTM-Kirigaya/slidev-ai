@@ -9,7 +9,7 @@ const slide = ref<{title: string, content: string} | null>(null)
 const loading = ref(true)
 const error = ref('')
 
-const fetchSlide = async () => {
+const getSlideById = async () => {
     try {
         const response = await axios.get(`${API_BASE_URL}/slides/preview/${route.params.hash}`)
         slide.value = response.data
@@ -32,7 +32,7 @@ const copyToClipboard = async () => {
 }
 
 onMounted(() => {
-    fetchSlide()
+    getSlideById()
 })
 </script>
 

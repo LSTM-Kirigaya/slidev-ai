@@ -1,17 +1,27 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 
-// PrimeVue components
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
-import Textarea from 'primevue/textarea'
-import Card from 'primevue/card'
-import Message from 'primevue/message'
-import Dropdown from 'primevue/dropdown'
-import FileUpload from 'primevue/fileupload'
-import { API_BASE_URL } from '@/utils/api'
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
+import Card from 'primevue/card';
+import Message from 'primevue/message';
+import Dropdown from 'primevue/dropdown';
+import FileUpload from 'primevue/fileupload';
+import ProcessSteps from '@/components/ProcessSteps.vue';
+import { API_BASE_URL } from '@/utils/api';
+import axios from 'axios';
+import { useSlidesStore } from '@/store/slide';
+import { useToast } from 'primevue';
+
+const emit = defineEmits<{
+    (e: 'complete', slideId: number): void;
+}>();
+
+const props = defineProps<{
+    id: number;
+}>();
 
 const router = useRouter()
 const title = ref('')
@@ -21,6 +31,9 @@ const fileUpload = ref<any>(null)
 const loading = ref(false)
 const error = ref('')
 const visibility = ref('public')
+
+const toast = useToast();
+const slidesStore = useSlidesStore();
 
 // Visibility options for the dropdown
 const visibilityOptions = ref([
@@ -83,7 +96,8 @@ const createSlide = async () => {
             }
         });
 
-        router.push(`/slides/process/${response.data.id}`)
+        // 触发完成事件，传递创建的slide ID
+        emit('complete', response.data.id)
     } catch (err: any) {
         console.error('Create slide error:', err)
         if (err.response && err.response.status === 401) {
@@ -109,10 +123,6 @@ const createSlide = async () => {
     }
 }
 
-const cancel = () => {
-    router.push('/dashboard')
-}
-
 // Add example outline to help users
 const addExample = () => {
     content.value = `Introduction to Slidev AI:
@@ -131,12 +141,47 @@ Getting started:
 - Share with your team
 `
 }
+
+const initForm = async () => {
+    try {
+        const slide = await slidesStore.getSlideById(props.id);
+
+        if (slide) {
+            title.value = slide.title || '';
+            content.value = slide.content || '';
+            visibility.value = slide.visibility || 'public';
+            file.value = null;
+
+            toast.add({
+                severity: 'success',
+                summary: 'Success',
+                detail: 'Slide loaded successfully',
+                life: 5000
+            })
+        }
+    } catch (error) {
+        console.error('Failed to init form:', error);
+        toast.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to load slide:' + error,
+            life: 5000
+        });
+    }
+}
+
+onMounted(() => {
+    initForm();
+});
 </script>
 
 <template>
     <div class="create-slide p-4">
+        <ProcessSteps :currentStep="1" />
+
         <div class="header mb-4">
             <h1>Create New Slide</h1>
+            <p class="text-600">Enter the basic information for your presentation</p>
         </div>
 
         <Card>
@@ -151,15 +196,8 @@ Getting started:
                     <div class="p-field mb-4">
                         <div class="flex align-items-center justify-content-between mb-2 gap-2">
                             <label for="outline" class="block m-0">Slide Outline</label>
-                            <Button 
-                                type="button" 
-                                label="Add Example" 
-                                text 
-                                size="small" 
-                                @click="addExample"
-                                :disabled="loading" 
-                                class="flex-shrink-0"
-                            />
+                            <Button type="button" label="Add Example" text size="small" @click="addExample"
+                                :disabled="loading" class="flex-shrink-0" />
                         </div>
                         <Textarea id="content" v-model="content"
                             placeholder="Enter your slide content&#10;&#10;Example:&#10;Introduction&#10;- Main point 1&#10;- Main point 2&#10;Conclusion"
@@ -198,9 +236,10 @@ Getting started:
                     </div>
 
                     <div class="flex justify-content-end gap-2">
-                        <Button type="button" @click="cancel" label="Cancel" severity="secondary" :disabled="loading" />
-                        <Button type="submit" :label="loading ? 'Creating...' : 'Create Slide'" :disabled="loading"
-                            icon="pi pi-check" />
+                        <Button type="button" @click="$router.push('/dashboard')" label="Cancel" severity="secondary"
+                            :disabled="loading" />
+                        <Button type="submit" :label="loading ? 'Creating...' : 'Continue to Outline'"
+                            :disabled="loading" icon="pi pi-arrow-right" iconPos="right" />
                     </div>
                 </form>
             </template>

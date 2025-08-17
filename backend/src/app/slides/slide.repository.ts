@@ -67,6 +67,6 @@ export class SlideRepository {
 
 
     async remove(id: string): Promise<void> {
-        await this.slideRepository.delete(id);
+        await this.slideRepository.softDelete(id);
     }
 }

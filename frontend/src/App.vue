@@ -3,6 +3,7 @@ import { useRouter } from 'vue-router';
 import { onMounted } from 'vue';
 import Navbar from './components/Navbar.vue';
 import { useAuthStore } from './store/auth';
+import Toast from 'primevue/toast';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -23,6 +24,7 @@ onMounted(() => {
 
 <template>
     <div id="app">
+        <Toast />
         <Navbar />
         <router-view />
     </div>
@@ -74,11 +76,6 @@ a {
     color: #e0e0e0;
 }
 
-.my-app-dark .p-inputtext {
-    background: #3c3c3c;
-    border: 1px solid #555;
-    color: #e0e0e0;
-}
 
 .my-app-dark .p-button {
     color: #fff;
