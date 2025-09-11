@@ -1,0 +1,2 @@
+- 搞清楚为啥 slidev 在 Linux 上编译有时候会发癫
+- 重写 peguim 这个主题

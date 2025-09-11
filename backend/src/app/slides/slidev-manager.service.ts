@@ -150,6 +150,9 @@ export class SlidevManagerService implements OnApplicationShutdown {
         const port = await this.startSlidev(id, filePath);
         const slidevServer = `http://localhost:${port}`;
 
+        console.log('capture screenshot at', slidevServer);
+        
+
         if (!fs.existsSync(outputDir)) {
             fs.mkdirSync(outputDir, { recursive: true });
         }
