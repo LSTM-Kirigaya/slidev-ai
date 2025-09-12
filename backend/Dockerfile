@@ -1,16 +1,16 @@
 # Backend (NestJS) multi-stage image with Puppeteer deps
 FROM node:20-bookworm-slim AS builder
+RUN npm i -g yarn@1.22.22
 
 WORKDIR /app
 
 # Install dependencies (with dev deps for build)
-COPY package*.json ./
-RUN npm install --no-audit --no-fund
+COPY package.json yarn.lock* ./
+RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile; else yarn install --no-lockfile; fi
 
 # Copy source and build
 COPY . ./
-RUN npm run build \
-  && npm prune --omit=dev
+RUN yarn build
 
 
 FROM node:20-bookworm-slim AS runtime
@@ -54,10 +54,13 @@ RUN apt-get update && apt-get install -y \
 ENV NODE_ENV=production
 WORKDIR /app
 
-# Copy production node_modules (after prune) and build output
-COPY --from=builder /app/node_modules ./node_modules
+# Install production dependencies only
+RUN npm i -g yarn@1.22.22
+COPY package.json yarn.lock* ./
+RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile --production=true; else yarn install --production=true --no-lockfile; fi
+
+# Copy build output
 COPY --from=builder /app/dist ./dist
-COPY package*.json ./
 
 # Optional: seed sqlite if present (will be overridden when mounting a volume)
 COPY database.sqlite ./database.sqlite

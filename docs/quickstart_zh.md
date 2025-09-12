@@ -4,7 +4,7 @@
 
 - Node.js v18+
 - Python 3.10+
-- npm 9+ 或 yarn 1.22+
+- yarn 1.22+（推荐）或 npm 9+
 - 至少 4GB 内存（推荐 8GB 开发环境）
 - Playwright Chromium 运行所需的系统库；若首次运行提示缺依赖，可执行 `sudo uv run playwright install-deps`。
 
@@ -54,7 +54,7 @@ git clone https://github.com/yourorg/slidev-ai.git
 cd slidev-ai
 
 # 安装工作区依赖（根/前端/后端）
-npm install
+yarn
 
 # 进入 Python 子项目安装依赖与 Chromium 浏览器
 cd backend/slidev-mcp
@@ -74,7 +74,7 @@ sudo uv run playwright install-deps || true
 ### 本地开发
 
 ```bash
-npm run dev
+yarn dev
 ```
 
 应用启动后可访问：

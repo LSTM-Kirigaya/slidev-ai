@@ -14,7 +14,8 @@ services:
       - OPENAI_MODEL=${OPENAI_MODEL}
     volumes:
       # Persist uploads and generated presentations to host
-      - ./backend/uploads:/app/uploads
+      # SsoLite.root() resolves to dist/uploads at runtime
+      - ./backend/uploads:/app/dist/uploads
       - ./backend/presentation:/app/presentation
       # Persist sqlite database file to host
       - ./backend/database.sqlite:/app/database.sqlite

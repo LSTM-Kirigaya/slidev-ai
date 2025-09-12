@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "description": "A web application for creating Slidev presentations with AI",
     "main": "index.js",
-    "packageManager": "npm@10.8.1",
+    "private": true,
+    "packageManager": "yarn@1.22.22",
     "workspaces": [
         "frontend",
         "backend"

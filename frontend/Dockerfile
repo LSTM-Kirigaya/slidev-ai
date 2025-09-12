@@ -1,10 +1,13 @@
 # Frontend (Vite + Vue) - build then serve via Nginx
 FROM node:20-bookworm-slim AS builder
+RUN npm i -g yarn@1.22.22
 WORKDIR /app
-COPY package*.json ./
-RUN npm install --no-audit --no-fund
+# Copy manifest and (optionally) lockfile first for better cache
+COPY package.json yarn.lock* ./
+# Prefer locked install; fall back when no lockfile
+RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile; else yarn install --no-lockfile; fi
 COPY . ./
-RUN npm run build
+RUN yarn build
 
 FROM nginx:1.27-alpine AS runtime
 WORKDIR /usr/share/nginx/html

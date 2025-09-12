@@ -2,7 +2,7 @@
 ### System Requirements
 - Node.js v18+
 - Python 3.10+
-- npm 9+ or yarn 1.22+
+- yarn 1.22+ (recommended) or npm 9+
 - 4GB RAM minimum (8GB recommended for development)
 - System libraries for Chromium used by Playwright. Install with `sudo uv run playwright install-deps` when first prompted (headless browsing / websearch relies on them).
 
@@ -52,7 +52,7 @@ git clone https://github.com/yourorg/slidev-ai.git
 cd slidev-ai
 
 # Install workspace deps (root, frontend, backend)
-npm install
+yarn
 
 # Install Python dependencies for slidev-mcp and headless browser (Chromium)
 cd backend/slidev-mcp
@@ -73,7 +73,7 @@ When a feature invokes headless browsing (e.g. websearch) for the first time, Pl
 
 ```bash
 # （Python crawler already installed its own Chromium via uv run playwright install）
-npm run dev
+yarn dev
 ```
 
 The application will be available at:
