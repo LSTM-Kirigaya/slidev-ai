@@ -1,0 +1,42 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: slidev-ai-backend:latest
+    container_name: slidev-ai-backend
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      # LLM envs - please set your own values or mount .env.production
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - OPENAI_MODEL=${OPENAI_MODEL}
+    volumes:
+      # Persist uploads and generated presentations to host
+      - ./backend/uploads:/app/uploads
+      - ./backend/presentation:/app/presentation
+      # Persist sqlite database file to host
+      - ./backend/database.sqlite:/app/database.sqlite
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: slidev-ai-frontend:latest
+    container_name: slidev-ai-frontend
+    environment:
+      # configure API url used at build time if needed
+      - VITE_DOMAIN=localhost
+      - VITE_PORT=3001
+      - VITE_ENABLE_HTTPS=false
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes: {}

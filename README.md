@@ -43,7 +43,50 @@ For developers looking to create similar AI-powered applications, here's a compr
 
 ## Getting Started
 
-Please refer to [Quick Start](docs/quickstart.md).
+Please refer to [Quick Start](docs/quickstart.md). For containerized deployment, see [Deploy with Docker](docs/deploy_docker.md) | [中文文档](docs/deploy_docker_zh.md).
+
+## Deploy with Docker
+
+Two containers are recommended:
+- backend: NestJS API on port 3001 (uses SQLite and Puppeteer)
+- frontend: Vite+Vue static site served by Nginx on port 8080
+
+We provide `backend/Dockerfile`, `frontend/Dockerfile`, and `docker-compose.yml`.
+
+1) Prepare environment variables (backend validates these at startup):
+
+On Windows cmd (temporarily for current shell):
+
+```
+set OPENAI_API_KEY=your_key
+set OPENAI_BASE_URL=https://api.openai.com/v1
+set OPENAI_MODEL=gpt-4o-mini
+```
+
+Or create a `.env` at repo root:
+
+```
+OPENAI_API_KEY=your_key
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4o-mini
+```
+
+2) Build and start:
+
+```
+docker compose up -d --build
+```
+
+3) Access:
+- Frontend: http://localhost:8080
+- Backend API: http://localhost:3001/api
+
+Volumes: uploads (backend_data), presentations (presentation_data), and sqlite (sqlite_data) persist across restarts.
+
+Notes:
+- Frontend API endpoint is configured at build time via `VITE_DOMAIN`, `VITE_PORT`, and `VITE_ENABLE_HTTPS`. The compose file defaults to `localhost:3001`.
+- Puppeteer dependencies are preinstalled in the backend image and run with `--no-sandbox` flags.
+- If ports 8080 or 3001 are occupied, edit the `ports` section in `docker-compose.yml`.
 
 ## 🤝 Contributing
 

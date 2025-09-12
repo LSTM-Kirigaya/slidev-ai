@@ -1,0 +1,15 @@
+node_modules
+**/node_modules
+**/.git
+.git
+.gitignore
+**/.vscode
+**/dist
+**/.DS_Store
+**/npm-debug.log*
+**/yarn-error.log*
+**/.turbo
+uploads
+frontend/node_modules
+backend/node_modules
+presentation

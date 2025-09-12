@@ -45,8 +45,49 @@ slidev-ai 是 [OpenMCP](https://github.com/LSTM-Kirigaya/openmcp-client) 生态�
 
 ## 📦 快速开始
 
-请参阅[快速开始](docs/quickstart_zh.md)。
+请参阅[快速开始](docs/quickstart_zh.md)。如需容器化部署，见[Docker 部署说明](docs/deploy_docker_zh.md) | [English](docs/deploy_docker.md)。
 
+## 使用 Docker 部署
+
+推荐拆分为 2 个容器：
+- backend：NestJS API（默认端口 3001），内置 Puppeteer 依赖与 SQLite
+- frontend：Vite+Vue 构建产物，使用 Nginx 提供静态服务（默认映射 8080）
+
+仓库已提供 `backend/Dockerfile`、`frontend/Dockerfile` 与 `docker-compose.yml`。
+
+1) 准备环境变量（后端启动时会校验）：
+
+在 Windows cmd.exe（当前窗口临时设置）：
+
+```
+set OPENAI_API_KEY=你的key
+set OPENAI_BASE_URL=https://api.openai.com/v1
+set OPENAI_MODEL=gpt-4o-mini
+```
+
+或在仓库根目录创建 `.env`：
+
+```
+OPENAI_API_KEY=你的key
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4o-mini
+```
+
+2) 构建并启动：
+
+```
+docker compose up -d --build
+```
+
+3) 访问：
+- 前端：http://localhost:8080
+- 后端 API：http://localhost:3001/api
+
+数据持久化：compose 将 `backend/uploads`、`backend/presentation`、`backend/database.sqlite` 绑定到容器内路径，重启不丢数据。
+
+注意：
+- 前端在构建时通过 `VITE_DOMAIN`、`VITE_PORT`、`VITE_ENABLE_HTTPS` 注入 API 地址，默认指向 `localhost:3001`，如需变更可编辑 `docker-compose.yml`。
+- 如 8080 或 3001 端口占用，可在 compose 中调整 `ports` 映射。
 ## 🤝 贡献指南
 
 欢迎社区贡献！请参考 [贡献指南](CONTRIBUTING.md) 和 [行为准则](CODE_OF_CONDUCT.md)。
