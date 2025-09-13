@@ -39,16 +39,25 @@ async function bootstrap() {
             origin: 'http://localhost:3000',
             credentials: true,
         });
+    } else if (process.env.CORS_ORIGIN) {
+        // Allow CORS in production when explicitly configured
+        app.enableCors({
+            origin: process.env.CORS_ORIGIN,
+            credentials: true,
+        });
     }
 
     // 设置 logger
     app.use(morgan('dev'));
 
-    // 启动 SPA 回退中间件
-    app.use(spaFallbackMiddleware({
-        spaPath: process.env.NODE_ENV === 'development' ? path.join(__dirname, '..', '..', 'dist', 'app') : './app',
-        excludedPrefixes: ['/api', '/docs', '/uploads'],
-    }));
+    // 在容器环境下禁用 SPA fallback，因为前端由独立容器服务
+    if (process.env.NODE_ENV === 'development') {
+        // 启动 SPA 回退中间件（仅开发环境）
+        app.use(spaFallbackMiddleware({
+            spaPath: path.join(__dirname, '..', '..', 'dist', 'app'),
+            excludedPrefixes: ['/api', '/docs', '/uploads'],
+        }));
+    }
 
 
     await app.listen(process.env.PORT || 3001);

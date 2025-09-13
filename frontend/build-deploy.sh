@@ -1,5 +1,4 @@
-export DOMAIN=localhost:3001
-export VITE_API_BASE_URL=http://$DOMAIN/api
-export VITE_UPLOADS_BASE_URL=http://$DOMAIN/uploads
-export VITE_PREVIEW_URL=http://$DOMAIN
+export VITE_DOMAIN=slidev-ai.peacesheep.xyz
+export VITE_PORT=443
+export VITE_ENABLE_HTTPS=true
 npm run build

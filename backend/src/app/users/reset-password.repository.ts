@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { ResetPassword } from './reset-password.entity';
 
 @Injectable()
 export class ResetPasswordRepository {
-    private repository: Repository<ResetPassword>;
-
-    constructor(private dataSource: DataSource) {
-        this.repository = this.dataSource.getRepository(ResetPassword);
-    }
+    constructor(
+        @InjectRepository(ResetPassword)
+        private readonly repository: Repository<ResetPassword>,
+    ) {}
 
     async create(resetPassword: Partial<ResetPassword>): Promise<ResetPassword> {
         const newResetPassword = this.repository.create(resetPassword);

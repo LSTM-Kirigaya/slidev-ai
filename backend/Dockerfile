@@ -1,6 +1,7 @@
 # Backend (NestJS) multi-stage image with Puppeteer deps
 FROM node:20-bookworm-slim AS builder
-RUN npm i -g yarn@1.22.22
+# Use corepack to manage Yarn (preinstalled in Node 20 images)
+RUN corepack enable && corepack prepare yarn@1.22.22 --activate
 
 WORKDIR /app
 
@@ -54,8 +55,8 @@ RUN apt-get update && apt-get install -y \
 ENV NODE_ENV=production
 WORKDIR /app
 
-# Install production dependencies only
-RUN npm i -g yarn@1.22.22
+# Install production dependencies only (activate Yarn via corepack)
+RUN corepack enable && corepack prepare yarn@1.22.22 --activate
 COPY package.json yarn.lock* ./
 RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile --production=true; else yarn install --production=true --no-lockfile; fi
 

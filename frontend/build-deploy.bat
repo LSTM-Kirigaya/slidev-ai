@@ -1,4 +1,4 @@
-set VITE_API_BASE_URL=https://slidev-ai.peacesheep.xyz/api
-set VITE_UPLOADS_BASE_URL=https://slidev-ai.peacesheep.xyz/uploads
-set VITE_PREVIEW_URL=https://slidev-ai.peacesheep.xyz
+set VITE_DOMAIN=slidev-ai.peacesheep.xyz
+set VITE_PORT=443
+set VITE_ENABLE_HTTPS=true
 npm run build

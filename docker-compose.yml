@@ -1,10 +1,10 @@
 services:
-  backend:
+  backend-node:
     build:
       context: ./backend
       dockerfile: Dockerfile
     image: slidev-ai-backend:latest
-    container_name: slidev-ai-backend
+    container_name: slidev-ai-backend-node
     environment:
       - NODE_ENV=production
       - PORT=3001
@@ -12,32 +12,48 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_BASE_URL=${OPENAI_BASE_URL}
       - OPENAI_MODEL=${OPENAI_MODEL}
+      # Allow CORS for frontend - configurable via environment
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:8080}
     volumes:
       # Persist uploads and generated presentations to host
       # SsoLite.root() resolves to dist/uploads at runtime
       - ./backend/uploads:/app/dist/uploads
       - ./backend/presentation:/app/presentation
+      # Content/config used by backend at runtime
+      - ./backend/markdown-files:/app/markdown-files
+      - ./backend/slidev-mcp:/app/slidev-mcp
       # Persist sqlite database file to host
       - ./backend/database.sqlite:/app/database.sqlite
+    restart: unless-stopped
+
+  backend-nginx:
+    image: nginx:1.27-alpine
+    container_name: slidev-ai-backend-nginx
+    depends_on:
+      - backend-node
+    volumes:
+      # Nginx config to route /api to backend-node:3001 and serve /uploads static
+      - ./backend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # Static uploads directory (read-only for Nginx)
+      - ./backend/uploads:/app/dist/uploads:ro
     ports:
-      - "3001:3001"
+      - "8001:80"
     restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_DOMAIN: ${VITE_DOMAIN:-localhost}
+        VITE_PORT: ${VITE_PORT:-8001}
+        VITE_ENABLE_HTTPS: ${VITE_ENABLE_HTTPS:-false}
     image: slidev-ai-frontend:latest
     container_name: slidev-ai-frontend
-    environment:
-      # configure API url used at build time if needed
-      - VITE_DOMAIN=localhost
-      - VITE_PORT=3001
-      - VITE_ENABLE_HTTPS=false
     ports:
       - "8080:80"
     depends_on:
-      - backend
+      - backend-nginx
     restart: unless-stopped
 
 volumes: {}

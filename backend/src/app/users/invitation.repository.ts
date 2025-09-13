@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Invitation } from './invitation.entity';
 
 @Injectable()
 export class InvitationRepository {
-    private repository: Repository<Invitation>;
-
-    constructor(private dataSource: DataSource) {
-        this.repository = this.dataSource.getRepository(Invitation);
-    }
+    constructor(
+        @InjectRepository(Invitation)
+        private readonly repository: Repository<Invitation>,
+    ) {}
 
     async create(invitation: Partial<Invitation>): Promise<Invitation> {
         const newInvitation = this.repository.create(invitation);
