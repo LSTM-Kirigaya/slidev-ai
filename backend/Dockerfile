@@ -16,41 +16,89 @@ RUN yarn build
 
 FROM node:20-bookworm-slim AS runtime
 
-# Install minimal system deps required by Chromium used by Puppeteer
-RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    fonts-liberation \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libc6 \
-    libcairo2 \
-    libcups2 \
-    libdbus-1-3 \
-    libexpat1 \
-    libfontconfig1 \
-    libgbm1 \
-    libglib2.0-0 \
-    libgtk-3-0 \
-    libnspr4 \
-    libnss3 \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libstdc++6 \
-    libx11-6 \
-    libx11-xcb1 \
-    libxcb1 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxi6 \
-    libxrandr2 \
-    libxrender1 \
-    libxshmfence1 \
-    libdrm2 \
-  && rm -rf /var/lib/apt/lists/*
+# Configure apt for better network resilience and use alternative mirrors
+RUN echo 'APT::Acquire::Retries "5";' > /etc/apt/apt.conf.d/80-retries \
+    && echo 'APT::Acquire::http::Timeout "60";' >> /etc/apt/apt.conf.d/80-retries \
+    && echo 'APT::Acquire::https::Timeout "60";' >> /etc/apt/apt.conf.d/80-retries \
+    && echo 'Acquire::http::Pipeline-Depth "0";' >> /etc/apt/apt.conf.d/80-retries
+
+# Try to use more reliable mirrors by creating sources.list
+RUN echo "deb http://deb.debian.org/debian bookworm main" > /etc/apt/sources.list && \
+    echo "deb http://deb.debian.org/debian bookworm-updates main" >> /etc/apt/sources.list && \
+    echo "deb http://deb.debian.org/debian-security bookworm-security main" >> /etc/apt/sources.list
+
+# Install essential packages first
+RUN for i in 1 2 3 4 5; do \
+        apt-get update && break || { \
+            echo "Attempt $i failed, retrying..." && sleep 10; \
+        } \
+    done && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        wget \
+        git \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python and build tools with minimal dependencies
+RUN for i in 1 2 3 4 5; do \
+        apt-get update && break || { \
+            echo "Attempt $i failed, retrying..." && sleep 10; \
+        } \
+    done && \
+    apt-get install -y --no-install-recommends \
+        python3 \
+        python3-venv \
+        curl \
+        wget \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install pip using break-system-packages (for Docker container this is safe)
+RUN curl -sSL https://bootstrap.pypa.io/get-pip.py | python3 - --break-system-packages
+
+# Install only essential Chromium dependencies (minimal list)
+RUN for i in 1 2 3 4 5; do \
+        apt-get update && break || { \
+            echo "Attempt $i failed, retrying..." && sleep 10; \
+        } \
+    done && \
+    apt-get install -y --no-install-recommends --fix-missing \
+        fonts-liberation \
+        libatk-bridge2.0-0 \
+        libatk1.0-0 \
+        libcups2 \
+        libdrm2 \
+        libgtk-3-0 \
+        libnspr4 \
+        libnss3 \
+        libx11-6 \
+        libxcomposite1 \
+        libxdamage1 \
+        libxrandr2 \
+        libxss1 \
+        libasound2 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Install uv (fast Python package manager) with retry mechanism and verification
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh || \
+    (sleep 5 && curl -LsSf https://astral.sh/uv/install.sh | sh) || \
+    (sleep 10 && curl -LsSf https://astral.sh/uv/install.sh | sh)
+ENV PATH="/root/.cargo/bin:$PATH"
+
+# Verify uv installation and create symlink if needed
+RUN which uv || ls -la /root/.cargo/bin/ || \
+    (echo "uv not found in expected location, trying alternative installation..." && \
+     curl -LsSf https://astral.sh/uv/0.4.18/install.sh | sh && \
+     ln -sf /root/.cargo/bin/uv /usr/local/bin/uv) && \
+    uv --version
+
+# Create symlink for python3.10 compatibility (using system python3)
+RUN python3 --version && \
+    ln -sf /usr/bin/python3 /usr/bin/python3.10 && \
+    ln -sf /usr/bin/python3 /usr/bin/python
 
 ENV NODE_ENV=production
 WORKDIR /app
@@ -62,6 +110,7 @@ RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile --production=true; 
 
 # Copy build output
 COPY --from=builder /app/dist ./dist
+
 
 # Optional: seed sqlite if present (will be overridden when mounting a volume)
 COPY database.sqlite ./database.sqlite

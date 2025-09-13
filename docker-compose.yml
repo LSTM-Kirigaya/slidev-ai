@@ -34,7 +34,6 @@ services:
       - ./backend/presentation:/app/presentation
       # Content/config used by backend at runtime
       - ./backend/markdown-files:/app/markdown-files
-      - ./backend/slidev-mcp:/app/slidev-mcp
       # Persist sqlite database file to host
       - ./backend/database.sqlite:/app/database.sqlite
     restart: unless-stopped
