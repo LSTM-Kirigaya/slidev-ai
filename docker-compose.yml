@@ -1,4 +1,17 @@
 services:
+  # 统一网关入口 - 转发流量到前后端
+  gateway:
+    image: nginx:1.27-alpine
+    container_name: slidev-ai-gateway
+    depends_on:
+      - frontend
+      - backend-nginx
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"
+    restart: unless-stopped
+
   backend-node:
     build:
       context: ./backend
@@ -12,8 +25,8 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_BASE_URL=${OPENAI_BASE_URL}
       - OPENAI_MODEL=${OPENAI_MODEL}
-      # Allow CORS for frontend - configurable via environment
-      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:8080}
+      # Allow CORS for frontend - 现在通过网关统一访问，同源不需要 CORS
+      # - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:8080}
     volumes:
       # Persist uploads and generated presentations to host
       # SsoLite.root() resolves to dist/uploads at runtime
@@ -36,8 +49,9 @@ services:
       - ./backend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       # Static uploads directory (read-only for Nginx)
       - ./backend/uploads:/app/dist/uploads:ro
-    ports:
-      - "8001:80"
+    # 不再对外暴露端口，通过网关访问
+    # ports:
+    #   - "8001:80"
     restart: unless-stopped
 
   frontend:
@@ -46,12 +60,13 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_DOMAIN: ${VITE_DOMAIN:-localhost}
-        VITE_PORT: ${VITE_PORT:-8001}
+        VITE_PORT: ${VITE_PORT:-80}
         VITE_ENABLE_HTTPS: ${VITE_ENABLE_HTTPS:-false}
     image: slidev-ai-frontend:latest
     container_name: slidev-ai-frontend
-    ports:
-      - "8080:80"
+    # 不再对外暴露端口，通过网关访问
+    # ports:
+    #   - "8080:80"
     depends_on:
       - backend-nginx
     restart: unless-stopped
