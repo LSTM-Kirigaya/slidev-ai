@@ -296,5 +296,6 @@
     "common.cancel": "Cancel",
     "common.submit": "Submit",
     "auth.login.captcha.title": "Verification Code",
-    "auth.login.captcha.error": "Incorrect Verification Code"
+    "auth.login.captcha.error": "Incorrect Verification Code",
+    "search": "Search"
 }

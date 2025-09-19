@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
 import { setLanguage } from '@/i18n/index';
 import { t } from '@/i18n/index';
 import { useAppStore } from '@/store/website';
@@ -11,10 +11,15 @@ import Button from 'primevue/button';
 import Avatar from 'primevue/avatar';
 import { useAuthStore } from '@/store/auth';
 import { UPLOADS_BASE_URL } from '@/utils/api';
+import SearchModal from './SearchModal.vue';
+
 const op = ref();
 const appStore = useAppStore();
 const route = useRoute();
 const router = useRouter();
+const searchModalVisible = ref(false);
+const searchModal = ref();
+
 const localeOptions = computed(() => [
     { label: 'English', value: 'en' },
     { label: '简体中文', value: 'zh-CN' }
@@ -43,7 +48,19 @@ const toggleDarkMode = () => {
     localStorage.setItem('darkMode', darkMode.value.toString())
 }
 
+// 打开搜索模态框
+const openSearch = () => {
+  searchModalVisible.value = true;
+};
 
+// 处理键盘快捷键
+const handleKeydown = (event: KeyboardEvent) => {
+  // Cmd/Ctrl + K 打开搜索
+  if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+    event.preventDefault();
+    openSearch();
+  }
+};
 
 // Initialize dark mode from localStorage or system preference
 onMounted(() => {
@@ -58,8 +75,15 @@ onMounted(() => {
             document.documentElement.classList.add('my-app-dark')
         }
     }
+    
+    // 添加键盘事件监听器
+    document.addEventListener('keydown', handleKeydown);
 });
 
+onUnmounted(() => {
+  // 移除键盘事件监听器
+  document.removeEventListener('keydown', handleKeydown);
+});
 
 // Define menu items
 const items = computed(() => {
@@ -100,14 +124,27 @@ const items = computed(() => {
 <template>
     <Menubar :model="items">
         <template #start>
-            <div class="flex align-items-center gap-2">
+            <div class="flex items-center gap-2">
                 <img src="/favicon.svg" alt="logo" class="w-8 h-8" />
-                <span class="font-bold text-xl">Slidev AI</span>
+                <span class="font-bold text-xl slidev-ai-title">Slidev AI</span>
             </div>
         </template>
 
         <template #end>
             <div class="flex items-center gap-2">
+                <div class="relative">
+                    <Button 
+                        outlined
+                        aria-label="Search"
+                        class="p-button-sm"
+                        @click="openSearch"
+                    >
+                    <i class="pi pi-search"></i>
+                    <span>{{ t('search') }}</span>
+                    <span class="ml-2">⌘ + k</span>
+                    </Button>
+                </div>
+                
                 <div class="relative">
                     <Button 
                         text 
@@ -170,6 +207,11 @@ const items = computed(() => {
             </div>
         </template>
     </Menubar>
+    
+    <SearchModal 
+      v-model:visible="searchModalVisible" 
+      ref="searchModal"
+    />
 </template>
 
 <style scoped>
@@ -187,5 +229,14 @@ const items = computed(() => {
     border-radius: 0;
     border: none;
     padding: 0.5rem 1rem;
+}
+
+
+.slidev-ai-title {
+  background: linear-gradient(90deg, rgb(95, 164, 250), rgb(139, 92, 246));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
 }
 </style>

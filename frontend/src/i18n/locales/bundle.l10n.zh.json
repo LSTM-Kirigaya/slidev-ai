@@ -296,5 +296,6 @@
     "common.cancel": "取消",
     "common.submit": "提交",
     "auth.login.captcha.title": "验证码",
-    "auth.login.captcha.error": "验证码错误"
+    "auth.login.captcha.error": "验证码错误",
+    "search": "搜索"
 }
