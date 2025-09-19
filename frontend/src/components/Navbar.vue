@@ -38,7 +38,8 @@ const toggleDarkMode = () => {
 // Logout function
 const logout = async () => {
     await authStore.logout();
-    router.push('/public');
+    // refresh
+    window.location.reload();
 }
 
 // Initialize dark mode from localStorage or system preference
@@ -106,7 +107,6 @@ const items = computed(() => {
                 <Dropdown v-model="selectedLocale" :options="localeOptions" option-label="label" option-value="value"
                     class="w-28 mr-2" size="small" :pt="{ root: { style: 'min-width: 100px' } }" />
                 <Button 
-                    v-if="authStore.user" 
                     text 
                     rounded 
                     @click="toggleDarkMode"

@@ -46,7 +46,10 @@ const handleSubmit = async () => {
         <div class="auth-container">
             <div class="auth-form">
                 <div class="flex flex-col items-center mb-4">
-                    <h1 class="text-3xl font-bold mt-2">Slidev AI</h1>
+                    <h1 class="text-3xl font-bold mt-2 flex items-center gap-1">
+                        <img src="/favicon.svg" alt="" width="50px">
+                        Slidev AI
+                    </h1>
                     <p class="text-gray-600 mt-2">{{ t('auth.tagline') }}</p>
                 </div>
 
