@@ -35,6 +35,8 @@ export class AuthController {
     ) {
         // 检查是否存在有效的 JWT cookie
         const token = req.cookies?.jwt;
+        console.log('toekn', token);
+        
         if (token) {
             try {
                 // 验证 token 是否有效

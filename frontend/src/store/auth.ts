@@ -20,18 +20,11 @@ export const useAuthStore = defineStore('auth', () => {
 
     const register = async (
         userData: { username: string; email: string; password: string; invitationCode: string }
-    ): Promise<ApiResult<UserDTO>> => {
+    ): Promise<ApiResult<any>> => {
         const res = await apiRegister(userData);
         if (!res.success) return { success: false, error: res.error, status: res.status };
         // 注册成功后自动登录拿到 user
-        // 刷新跳转到
-        // window.location.href = '/login';
-        return await login({
-            username: userData.username,
-            password: userData.password,
-            captchaId: '',
-            captchaText: ''
-        });
+        return res;
     };
 
     const logout = async (): Promise<ApiResult<void>> => {

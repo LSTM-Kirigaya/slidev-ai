@@ -49,7 +49,11 @@ export class CaptchaService implements OnModuleInit, OnModuleDestroy {
         };
     }
 
-    validateCaptcha(id: string, text: string): boolean {
+    validateCaptcha(id?: string, text?: string): boolean {
+        if (!id || !text) {
+            return false;
+        }
+        
         const entry = this.captchaStore.get(id);
 
         // 验证码不存在或已过期

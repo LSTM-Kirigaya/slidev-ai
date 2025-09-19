@@ -51,8 +51,8 @@ export class AuthService {
 
     async validateUser(loginDto: LoginDto): Promise<any> {
         // 然后再搜索用户进行密码比对
-        const user = await this.userRepository.findOneByUsername(loginDto.username);
-        if (user && await bcrypt.compare(loginDto.password, user.password)) {
+        const user = await this.userRepository.findOneByUsername(loginDto.username!);
+        if (user && await bcrypt.compare(loginDto.password!, user.password)) {
             const { password, ...result } = user;
             return result;
         }

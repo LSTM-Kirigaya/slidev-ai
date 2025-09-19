@@ -31,20 +31,16 @@ export class CreateUserDto {
 
 export class LoginDto {
     @ApiProperty({ description: '用户名', example: 'alice' })
-    @IsString()
-    username!: string;
+    username?: string;
     
     @ApiProperty({ description: '密码', example: 'abc123' })
-    @IsString()
-    password!: string;
+    password?: string;
 
     @ApiProperty({ description: '验证码 ID', example: 'abc123' })
-    @IsString()
-    captchaId!: string;
+    captchaId?: string;
 
     @ApiProperty({ description: '验证码文本', example: 'abc123' })
-    @IsString()
-    captchaText!: string;
+    captchaText?: string;
 }
 
 // 用于对外返回的用户信息（不含密码）

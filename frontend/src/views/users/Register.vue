@@ -36,7 +36,7 @@ const handleSubmit = async () => {
     });
 
     if (res.success) {
-        router.push('/dashboard');
+        router.push('/login');
     } else {
         error.value = res.error || t('auth.register.error');
     }
