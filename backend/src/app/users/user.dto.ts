@@ -29,6 +29,24 @@ export class CreateUserDto {
     role?: string;
 }
 
+export class LoginDto {
+    @ApiProperty({ description: '用户名', example: 'alice' })
+    @IsString()
+    username!: string;
+    
+    @ApiProperty({ description: '密码', example: 'abc123' })
+    @IsString()
+    password!: string;
+
+    @ApiProperty({ description: '验证码 ID', example: 'abc123' })
+    @IsString()
+    captchaId!: string;
+
+    @ApiProperty({ description: '验证码文本', example: 'abc123' })
+    @IsString()
+    captchaText!: string;
+}
+
 // 用于对外返回的用户信息（不含密码）
 export class UserResponseDto {
     @ApiProperty({ description: '用户 ID', example: 1 })

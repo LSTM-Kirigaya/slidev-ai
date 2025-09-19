@@ -1,9 +1,10 @@
-import { CreateUserDto } from '@/app/users/user.dto';
+import { CreateUserDto, LoginDto } from '@/app/users/user.dto';
 import { UserRepository } from '@/app/users/users.repository';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { InvitationService } from '@/app/users/invitation.service';
+import { CaptchaService } from './captcha.service';
 
 @Injectable()
 export class AuthService {
@@ -11,6 +12,7 @@ export class AuthService {
         private userRepository: UserRepository,
         private jwtService: JwtService,
         private invitationService: InvitationService,
+        private captchaService: CaptchaService,
     ) { }
 
     async register(createUserDto: CreateUserDto): Promise<{ accessToken: string }> {
@@ -47,9 +49,10 @@ export class AuthService {
         };
     }
 
-    async validateUser(username: string, pass: string): Promise<any> {
-        const user = await this.userRepository.findOneByUsername(username);
-        if (user && await bcrypt.compare(pass, user.password)) {
+    async validateUser(loginDto: LoginDto): Promise<any> {
+        // 然后再搜索用户进行密码比对
+        const user = await this.userRepository.findOneByUsername(loginDto.username);
+        if (user && await bcrypt.compare(loginDto.password, user.password)) {
             const { password, ...result } = user;
             return result;
         }

@@ -1,16 +1,18 @@
 import { Controller, Post, Body, HttpCode, Res, Req } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from '@/app/users/user.dto';
+import { CreateUserDto, LoginDto } from '@/app/users/user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ApiTags, ApiOperation, ApiBody, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import { CaptchaService } from './captcha.service';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
     constructor(
         private authService: AuthService,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private captchaService: CaptchaService
     ) { }
 
     @Post('register')
@@ -29,7 +31,7 @@ export class AuthController {
     async login(
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response,
-        @Body() loginDto?: { username: string; password: string }
+        @Body() loginDto?: LoginDto
     ) {
         // 检查是否存在有效的 JWT cookie
         const token = req.cookies?.jwt;
@@ -81,8 +83,14 @@ export class AuthController {
             };
         }
 
+        const captchaOk = this.captchaService.validateCaptcha(loginDto.captchaId, loginDto.captchaText);
+        if (!captchaOk) {
+            return { error: 'Invalid captcha' };
+        }
+
         // 正常登录流程
-        const user = await this.authService.validateUser(loginDto.username, loginDto.password);
+        const user = await this.authService.validateUser(loginDto);
+
         if (!user) {
             return { error: 'Invalid credentials' };
         }

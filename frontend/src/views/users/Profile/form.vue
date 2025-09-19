@@ -164,7 +164,7 @@ const logout = async () => {
         <template #content>
             <div v-if="props.user" class="flex flex-col items-center gap-6">
                 <!-- Avatar -->
-                <div class="relative group cursor-pointer" v-tooltip.top="'Change Avatar'" @click="onAvatarClick">
+                <div class="relative group cursor-pointer"  @click="onAvatarClick">
                     <Avatar v-if="props.user.avatar && !avatarFile"
                         :image="`${UPLOADS_BASE_URL}/avatars/${props.user.avatar}`" shape="circle" size="large"
                         class="p-avatar-lg shadow-md" />

@@ -294,5 +294,7 @@
     "import-slide.choose-file": "选择文件",
     "import-slide.file-hint": "支持 .md 或 .slidev 格式，大小不超过 10MB",
     "common.cancel": "取消",
-    "common.submit": "提交"
+    "common.submit": "提交",
+    "auth.login.captcha.title": "验证码",
+    "auth.login.captcha.error": "验证码错误"
 }

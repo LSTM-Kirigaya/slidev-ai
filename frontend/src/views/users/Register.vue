@@ -6,6 +6,8 @@ import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Card from 'primevue/card';
 import Message from 'primevue/message';
+import FloatLabel from 'primevue/floatlabel';
+
 import { useAuthStore } from '@/store/auth';
 import { t } from '@/i18n/index';
 
@@ -48,43 +50,49 @@ const handleSubmit = async () => {
                 <div class="flex flex-col items-center mb-4">
                     <h1 class="text-3xl font-bold mt-2 flex items-center gap-1">
                         <img src="/favicon.svg" alt="" width="50px">
-                        Slidev AI
+                        {{ t('auth.register.title') }}
                     </h1>
                     <p class="text-gray-600 mt-2">{{ t('auth.tagline') }}</p>
                 </div>
 
                 <Card>
-                    <template #title>
-                        <h2>{{ t('auth.register.title') }}</h2>
-                    </template>
-
                     <template #content>
                         <form @submit.prevent="handleSubmit">
-                            <div class="p-field mb-4">
-                                <label for="username" class="block mb-2">{{ t('auth.register.username') }}</label>
-                                <InputText id="username" v-model="username" type="text" required class="w-full" />
+                            <div class="p-field mb-8 mt-2">
+                                <FloatLabel>
+                                    <InputText id="username" v-model="username" type="text" required class="w-full" />
+                                    <label for="username">{{ t('auth.register.username') }}</label>
+                                </FloatLabel>
                             </div>
 
-                            <div class="p-field mb-4">
-                                <label for="email" class="block mb-2">{{ t('auth.register.email') }}</label>
-                                <InputText id="email" v-model="email" type="email" required class="w-full" />
+                            <div class="p-field mb-8">
+                                <FloatLabel>
+                                    <InputText id="email" v-model="email" type="email" required class="w-full" />
+                                    <label for="email">{{ t('auth.register.email') }}</label>
+                                </FloatLabel>
                             </div>
 
-                            <div class="p-field mb-4 w-100">
-                                <label for="password" class="block mb-2">{{ t('auth.register.password') }}</label>
-                                <Password id="password" v-model="password" :feedback="true" toggleMask required
-                                    class="w-full" />
+                            <div class="p-field mb-8 w-100">
+                                <FloatLabel>
+                                    <Password id="password" v-model="password" :feedback="true" toggleMask required
+                                        class="w-full" />
+                                    <label for="password">{{ t('auth.register.password') }}</label>
+                                </FloatLabel>
                             </div>
 
-                            <div class="p-field mb-4 w-100">
-                                <label for="confirmPassword" class="block mb-2">{{ t('auth.register.confirm-password') }}</label>
-                                <Password id="confirmPassword" v-model="confirmPassword" :feedback="false" toggleMask required
-                                    class="w-full" />
+                            <div class="p-field mb-8 w-100">
+                                <FloatLabel>
+                                    <Password id="confirmPassword" v-model="confirmPassword" :feedback="false" toggleMask required
+                                        class="w-full" />
+                                    <label for="confirmPassword">{{ t('auth.register.confirm-password') }}</label>
+                                </FloatLabel>
                             </div>
 
-                            <div class="p-field mb-4">
-                                <label for="invitationCode" class="block mb-2">{{ t('auth.register.invitation-code') }}</label>
-                                <InputText id="invitationCode" v-model="invitationCode" type="text" required class="w-full" />
+                            <div class="p-field mb-8">
+                                <FloatLabel>
+                                    <InputText id="invitationCode" v-model="invitationCode" type="text" required class="w-full" />
+                                    <label for="invitationCode">{{ t('auth.register.invitation-code') }}</label>
+                                </FloatLabel>
                             </div>
 
                             <Button type="submit" :label="t('auth.register.button')" icon="pi pi-user-plus"

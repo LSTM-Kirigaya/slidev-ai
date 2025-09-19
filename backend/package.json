@@ -40,6 +40,7 @@
         "@types/multer": "^2.0.0",
         "async-mutex": "^0.5.0",
         "bcryptjs": "^3.0.2",
+        "chalk": "^4.1.2",
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.2",
         "cookie-parser": "^1.4.7",
@@ -54,13 +55,13 @@
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.2",
         "sqlite3": "^5.1.7",
+        "svg-captcha": "^1.4.0",
         "swagger-ui-express": "^5.0.1",
         "tree-kill": "^1.2.2",
         "typeorm": "^0.3.25",
         "uuid": "^11.1.0",
         "vue": "^3.5.21",
-        "wait-on": "^8.0.4",
-        "chalk": "^4.1.2"
+        "wait-on": "^8.0.4"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.2.0",

@@ -294,5 +294,7 @@
     "import-slide.choose-file": "Choose File",
     "import-slide.file-hint": "Supports .md or .slidev format, maximum size 10MB",
     "common.cancel": "Cancel",
-    "common.submit": "Submit"
+    "common.submit": "Submit",
+    "auth.login.captcha.title": "Verification Code",
+    "auth.login.captcha.error": "Incorrect Verification Code"
 }

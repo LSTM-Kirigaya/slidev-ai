@@ -116,7 +116,6 @@ const items = computed(() => {
                         severity="secondary" 
                         aria-label="Language selector"
                         @click="op.toggle($event)"
-                        v-tooltip="{ value: t('locale.select-language'), pt: { root: { style: { width: 'max-content' } } } }"
                     />
                     <OverlayPanel 
                         ref="op" 

@@ -5,6 +5,8 @@ import { API_BASE_URL } from '@/utils/api'
 export interface LoginDto {
     username: string;
     password: string;
+    captchaId: string;
+    captchaText: string;
 }
 
 export interface RegisterDto {
@@ -24,7 +26,28 @@ export interface UserDTO {
     egoId?: number | null;
 }
 
+export interface CaptchaResponse {
+    svg: string;
+    id: string;
+}
 
+
+export async function apiGetCaptcha(): Promise<Result<CaptchaResponse>> {
+    try {
+        const { data, status } = await http.post(`${API_BASE_URL}/auth/captcha`);
+        if (data?.success && data?.data) {
+            return { success: true, data: data.data };
+        }
+        if (typeof data?.error === 'string') {
+            return { success: false, error: data.error, status };
+        }
+        return { success: false, error: data?.message || 'Failed to get captcha', status };
+    } catch (err: any) {
+        const status = err?.response?.status;
+        const msg = err?.response?.data?.message || err?.message || 'Failed to get captcha';
+        return { success: false, error: msg, status };
+    }
+}
 
 export async function apiLogin(dto?: LoginDto): Promise<Result<UserDTO>> {
     try {
