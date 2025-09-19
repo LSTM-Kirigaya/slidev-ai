@@ -153,7 +153,7 @@ onMounted(fetchSlides)
                 <template #list="slotProps">
                     <div class="flex flex-col gap-4">
                         <div v-for="slide in slotProps.items" :key="slide.id"
-                            class="flex item rounded-xl shadow-sm hover:shadow-lg bg-white dark:bg-gray-800 p-4 cursor-pointer"
+                            class="flex item rounded-xl shadow-sm bg-white dark:bg-gray-800 p-1 cursor-pointer"
                             @click="gotoPreview(slide)">
                             <!-- Thumbnail -->
                             <div
@@ -164,7 +164,7 @@ onMounted(fetchSlides)
                             </div>
 
                             <!-- Right Info -->
-                            <div class="flex flex-col flex-1 ml-5">
+                            <div class="flex flex-col flex-1 ml-5 p-3">
                                 <!-- Title -->
                                 <div class="flex items-center gap-2 mb-2">
                                     <span class="font-semibold text-lg text-gray-900 dark:text-gray-100 truncate">
@@ -190,7 +190,7 @@ onMounted(fetchSlides)
                                 </p>
 
                                 <!-- Actions -->
-                                <div class="flex gap-2 mt-auto">
+                                <div class="flex gap-5 mt-auto">
 
                                     <div class="action-btn" :data-label="t('dashboard.action.edit')">
                                         <Button icon="pi pi-pencil" severity="info" text size="small"
@@ -219,11 +219,20 @@ onMounted(fetchSlides)
 }
 
 .item {
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.8);
+    transition: all .2s ease-in-out;
+}
+
+.item:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .my-app-dark .item {
-    background-color: #282828;
+    background-color: rgba(46, 46, 46, 0.7);
+}
+
+.my-app-dark .item:hover {
+    box-shadow: 0 0 10px rgba(100, 100, 100, 0.2);
 }
 
 

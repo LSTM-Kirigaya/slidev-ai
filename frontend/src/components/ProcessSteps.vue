@@ -90,9 +90,6 @@ onMounted(async () => {
 <template>
     <div class="w-full bg-white p-card rounded-lg shadow p-2 mb-6">
         <div class="flex items-center justify-between relative">
-            <!-- 连接线 -->
-            <div class="absolute left-0 right-0 top-1/2 h-0.5 bg-gray-200 dark:bg-gray-700 -z-10"></div>
-            
             <!-- 循环渲染步骤 -->
             <div v-for="(stage, _) in stages" :key="stage.key" class="flex flex-col items-center flex-1">
                 <!-- 包一层相对定位，用于放右上角徽标 -->

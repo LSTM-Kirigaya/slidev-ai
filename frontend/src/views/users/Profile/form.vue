@@ -145,6 +145,14 @@ const getImageUrl = (file: any) => {
 const goLogin = () => {
     emit('login')
 }
+
+// Logout function
+const logout = async () => {
+    await authStore.logout();
+    // refresh
+    window.location.reload();
+}
+
 </script>
 
 <template>
@@ -157,8 +165,9 @@ const goLogin = () => {
             <div v-if="props.user" class="flex flex-col items-center gap-6">
                 <!-- Avatar -->
                 <div class="relative group cursor-pointer" v-tooltip.top="'Change Avatar'" @click="onAvatarClick">
-                    <Avatar v-if="props.user.avatar && !avatarFile" :image="`${UPLOADS_BASE_URL}/avatars/${props.user.avatar}`"
-                        shape="circle" size="large" class="p-avatar-lg shadow-md" />
+                    <Avatar v-if="props.user.avatar && !avatarFile"
+                        :image="`${UPLOADS_BASE_URL}/avatars/${props.user.avatar}`" shape="circle" size="large"
+                        class="p-avatar-lg shadow-md" />
                     <Avatar v-else-if="avatarFile" :image="getImageUrl(avatarFile)" shape="circle" size="large"
                         class="p-avatar-lg shadow-md" />
                     <Avatar v-else :label="props.user.username.charAt(0).toUpperCase()" shape="circle" size="large"
@@ -178,26 +187,26 @@ const goLogin = () => {
                             <Button v-if="isEmailValid" icon="pi pi-envelope" severity="secondary" text
                                 @click="openEmail" />
                         </div>
-                        <InputText v-model="email" :disabled="!props.isSelf" placeholder="Enter new email" class="w-full" />
+                        <InputText v-model="email" :disabled="!props.isSelf" placeholder="Enter new email"
+                            class="w-full" />
                     </div>
                     <div>
                         <div class="flex items-center justify-between">
-                            <label class="block text-sm font-medium text-gray-500 mb-1">{{ t('profile.website') }}</label>
+                            <label class="block text-sm font-medium text-gray-500 mb-1">{{ t('profile.website')
+                                }}</label>
                             <Button v-if="isWebsiteValid" icon="pi pi-external-link" severity="secondary" text
                                 @click="openWebsite" />
                         </div>
-                        <InputText v-model="website" :disabled="!props.isSelf" placeholder="Your beloved blog or website"
-                            class="w-full" />
+                        <InputText v-model="website" :disabled="!props.isSelf"
+                            placeholder="Your beloved blog or website" class="w-full" />
                     </div>
                 </div>
 
-                <Button v-if="props.isSelf"
-                    :label="t('save-change')"
-                    :loading="loading"
-                    icon="pi pi-save"
-                    class="mt-4 w-full"
-                    @click="submit"
-                />
+                <Button v-if="props.isSelf" :label="t('save-change')" :loading="loading" icon="pi pi-save"
+                    class="mt-4 w-full" @click="submit" />
+
+                <Button :label="t('auth.logout.button')" @click="logout" icon="pi pi-sign-out" class="mt-1 w-full"
+                    severity="danger" />
             </div>
 
             <div v-else class="flex flex-col items-center gap-4 py-6 text-center">

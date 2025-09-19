@@ -118,7 +118,4 @@ onMounted(fetchSlides)
     flex-direction: column;
 }
 
-.my-app-dark .slide-card {
-    background-color: #282828;
-}
 </style>

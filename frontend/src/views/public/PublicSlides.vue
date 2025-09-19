@@ -111,13 +111,4 @@ onMounted(fetchSlides)
     max-width: 1200px;
     margin: auto;
 }
-
-.slide-card {
-    display: flex;
-    flex-direction: column;
-}
-
-.my-app-dark .slide-card {
-    background-color: #282828;
-}
 </style>

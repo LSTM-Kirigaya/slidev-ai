@@ -93,7 +93,7 @@ body {
 }
 
 .my-app-dark .p-card {
-    background: #2d2d2d;
+    background: rgba(45, 45, 45, 0.5);
     color: #e0e0e0;
 }
 
@@ -105,6 +105,20 @@ body {
     color: #fff;
 }
 
+.slide-card {
+    display: flex;
+    flex-direction: column;
+    transition: all .2s ease-in-out;
+}
+
+.slide-card:hover {
+    scale: 1.05;
+    transition: all .2s ease-in-out;
+}
+
+.my-app-dark .slide-card {
+    background-color: rgba(34, 38, 46, 0.8);
+}
 
 .glow-ball-lg {
     position: fixed;

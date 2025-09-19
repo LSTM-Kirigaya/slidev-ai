@@ -3,28 +3,36 @@ import { ref, onMounted, computed } from 'vue';
 import { setLanguage } from '@/i18n/index';
 import { t } from '@/i18n/index';
 import { useAppStore } from '@/store/website';
-import Dropdown from 'primevue/dropdown';
-import { useRoute, useRouter } from 'vue-router'; // 添加对useRoute的导入
-const appStore = useAppStore();
-const route = useRoute(); // 获取当前路由信息
-const router = useRouter();
-const localeOptions = computed(() => [
-    { label: t('locale.english'), value: 'en' },
-    { label: t('locale.chinese-simplified'), value: 'zh-CN' }
-]);
-const selectedLocale = computed({
-    get: () => appStore.locale,
-    set: async (val: string) => {
-        appStore.setLocale(val);
-        await setLanguage(val);
-        window.location.reload(); // 语言切换后刷新页面，确保所有文本更新
-    }
-});
+import OverlayPanel from 'primevue/overlaypanel';
+import Listbox from 'primevue/listbox';
+import { useRoute, useRouter } from 'vue-router';
 import Menubar from 'primevue/menubar';
 import Button from 'primevue/button';
 import Avatar from 'primevue/avatar';
 import { useAuthStore } from '@/store/auth';
 import { UPLOADS_BASE_URL } from '@/utils/api';
+const op = ref();
+const appStore = useAppStore();
+const route = useRoute();
+const router = useRouter();
+const localeOptions = computed(() => [
+    { label: 'English', value: 'en' },
+    { label: '简体中文', value: 'zh-CN' }
+]);
+
+const selectedLocaleItem = computed(() => {
+    return localeOptions.value.find(option => option.value === appStore.locale);
+});
+
+const changeLocale = (event: any) => {
+    
+    if (event.value) {
+        appStore.setLocale(event.value);
+        setLanguage(event.value.value);
+        window.location.reload();
+    }
+};
+
 const darkMode = ref(false);
 const authStore = useAuthStore();
 
@@ -35,12 +43,7 @@ const toggleDarkMode = () => {
     localStorage.setItem('darkMode', darkMode.value.toString())
 }
 
-// Logout function
-const logout = async () => {
-    await authStore.logout();
-    // refresh
-    window.location.reload();
-}
+
 
 // Initialize dark mode from localStorage or system preference
 onMounted(() => {
@@ -91,6 +94,7 @@ const items = computed(() => {
         }
     ];
 });
+
 </script>
 
 <template>
@@ -104,8 +108,36 @@ const items = computed(() => {
 
         <template #end>
             <div class="flex items-center gap-2">
-                <Dropdown v-model="selectedLocale" :options="localeOptions" option-label="label" option-value="value"
-                    class="w-28 mr-2" size="small" :pt="{ root: { style: 'min-width: 100px' } }" />
+                <div class="relative">
+                    <Button 
+                        text 
+                        rounded 
+                        icon="pi pi-globe"
+                        severity="secondary" 
+                        aria-label="Language selector"
+                        @click="op.toggle($event)"
+                        v-tooltip="{ value: t('locale.select-language'), pt: { root: { style: { width: 'max-content' } } } }"
+                    />
+                    <OverlayPanel 
+                        ref="op" 
+                        :dismissable="true" 
+                        :pt="{ root: { class: 'p-0' } }"
+                        :autoZIndex="true"
+                    >
+                        <Listbox 
+                            :options="localeOptions" 
+                            optionLabel="label" 
+                            optionValue="value"
+                            :modelValue="selectedLocaleItem"
+                            @change="changeLocale"
+                            :pt="{
+                                root: { style: 'border: none; box-shadow: none;' },
+                                listContainer: { style: 'border: none;' }
+                            }"
+                        />
+                    </OverlayPanel>
+                </div>
+                
                 <Button 
                     text 
                     rounded 
@@ -132,8 +164,6 @@ const items = computed(() => {
                         <Avatar v-else :label="authStore.user.username.charAt(0).toUpperCase()" shape="circle"
                             class="cursor-pointer" :title="t('nav.my-profile')"
                             @click="router.push(`/profile/${authStore.user.id}`)" />
-                        <Button :label="t('auth.logout.button')" @click="logout" icon="pi pi-sign-out" text
-                            size="small" />
                     </div>
                     <Button v-else :label="t('auth.login.button')" @click="router.push('/login')"
                         icon="pi pi-sign-in" />
@@ -144,6 +174,11 @@ const items = computed(() => {
 </template>
 
 <style scoped>
+
+.p-listbox {
+    background-color: unset !important;
+}
+
 .navbar {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 100;
