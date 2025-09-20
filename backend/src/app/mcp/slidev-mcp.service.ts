@@ -179,9 +179,6 @@ export class SlidevMcpService implements OnModuleInit {
                 this.logger.log(`Created new theme object for ${themeName}`);
             }
 
-            console.log('current theme', theme.id);
-            
-
             // 更新主题属性
             theme.github = manifest.github || null;
             theme.installScripts = manifest.installScripts || [];

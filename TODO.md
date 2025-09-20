@@ -1,2 +1,3 @@
 - 搞清楚为啥 slidev 在 Linux 上编译有时候会发癫
 - 重写 peguim 这个主题
+- 解决函数重复的这个问题（大概率是 openmcp-sdk 的问题）
