@@ -130,6 +130,25 @@ export const useSlidesStore = defineStore('slides', () => {
         return res;
     }
 
+    /**
+     * 搜索幻灯片
+     * @param query 搜索关键词
+     * @returns 搜索结果
+     */
+    const searchSlides = async (query: string) => {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/slides/search`, {
+                query: query.trim()
+            });
+            // 后端返回的数据结构是 { total: number, slides: array }
+            // 我们只需要返回 slides 数组
+            return response.data.slides || [];
+        } catch (error) {
+            console.error('Failed to search slides:', error);
+            throw error;
+        }
+    }
+
     return { 
         slides, 
         getSlideById, 
@@ -140,6 +159,7 @@ export const useSlidesStore = defineStore('slides', () => {
         createSlide, 
         saveSlide, 
         buildSlidev,
-        importSlide  // 添加导入方法
+        importSlide,  // 添加导入方法
+        searchSlides  // 添加搜索方法
     }
 })

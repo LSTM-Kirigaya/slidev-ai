@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Slide } from './slide.entity';
+import { searchSlidesRes } from './slide.dto';
 
 @Injectable()
 export class SlideRepository {
@@ -77,5 +78,14 @@ export class SlideRepository {
 
     async remove(id: number): Promise<void> {
         await this.slideRepository.softDelete(id);
+    }
+
+    async search(query: string): Promise<searchSlidesRes> {
+    const [slides, total] = await this.slideRepository
+        .createQueryBuilder('slide')
+        .where('slide.title LIKE :query', { query: `%${query}%` })
+        .getManyAndCount();
+
+        return { total, slides };
     }
 }

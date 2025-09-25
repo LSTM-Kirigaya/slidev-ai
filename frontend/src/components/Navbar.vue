@@ -139,9 +139,9 @@ const items = computed(() => {
                         class="p-button-sm"
                         @click="openSearch"
                     >
-                    <i class="pi pi-search"></i>
-                    <span>{{ t('search') }}</span>
-                    <span class="ml-2">⌘ + k</span>
+                        <i class="pi pi-search"></i>
+                        <span class="ml-1">{{ t('search') }}</span>
+                        <span class="ml-2 text-xs opacity-75">⌘K</span>
                     </Button>
                 </div>
                 

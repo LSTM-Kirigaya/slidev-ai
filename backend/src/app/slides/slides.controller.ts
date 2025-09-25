@@ -7,7 +7,7 @@ import { diskStorage } from 'multer';
 import path, { extname } from 'path';
 import { Observable } from 'rxjs';
 import { SlideRepository } from '@/app/slides/slide.repository';
-import { CreateSlideDto, ImportSlideDto, OutlinesDto, SlidevProjectDto } from './slide.dto';
+import { CreateSlideDto, ImportSlideDto, OutlinesDto, searchSlidesReq, SlidevProjectDto } from './slide.dto';
 import { SlidevManagerService } from './slidev-manager.service';
 import httpProxy from 'http-proxy';
 import { PrivateSlideOwnerGuard, PublicSlideOwnerGuard } from '../auth/slide-owner.guard';
@@ -314,6 +314,15 @@ export class SlidesController {
         return resp;
     }
 
+    @Post('search')
+    @ApiOperation({ summary: '搜索幻灯片' })
+    @ApiBody({ description: '搜索请求', schema: { type: 'object', properties: { query: { type: 'string' } } } })
+    async searchSlides(
+        @Body() body: searchSlidesReq
+    ) {
+        return this.slideRepository.search(body.query);
+    }
+
     @UseGuards(JwtAuthGuard)
     @UseFileUploader('file')
     @Post('import')
@@ -344,4 +353,5 @@ export class SlidesController {
         const userId = user.id;
         return this.slidesService.importSlide(userId, createSlideDto, file);
     }
+
 }

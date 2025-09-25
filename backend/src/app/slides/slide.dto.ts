@@ -51,3 +51,15 @@ export interface SlidevProjectDto {
      */
     slides_path: string;
 }
+
+export interface searchSlidesReq {
+    query: string;
+}
+
+export interface searchSlidesRes {
+    total: number;
+    slides: Array<{
+        id: number;
+        title: string;
+    }>;
+}
