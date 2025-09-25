@@ -80,10 +80,22 @@ export class SlideRepository {
         await this.slideRepository.softDelete(id);
     }
 
-    async search(query: string): Promise<searchSlidesRes> {
+    async search(query: string,userId: number|null): Promise<searchSlidesRes> {
     const [slides, total] = await this.slideRepository
         .createQueryBuilder('slide')
+        .select([
+            'slide.id',
+            'slide.title', 
+            'slide.createdAt',
+            'slide.updatedAt',
+            'slide.processingStatus',
+            'user.id',
+            'user.username'
+        ])
         .where('slide.title LIKE :query', { query: `%${query}%` })
+        .andWhere('slide.visibility = :visibility', { visibility: 'public' })
+        .andWhere('slide.processingStatus = :processingStatus', { processingStatus: 'completed' })
+        .leftJoin('slide.user', 'user')
         .getManyAndCount();
 
         return { total, slides };

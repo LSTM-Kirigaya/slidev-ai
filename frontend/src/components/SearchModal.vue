@@ -7,6 +7,8 @@ import ProgressSpinner from 'primevue/progressspinner';
 import Message from 'primevue/message';
 import { useSlidesSearchStore } from '@/store/slidesSearch';
 
+import { t } from '@/i18n/index';
+
 
 const emit = defineEmits(['update:visible']);
 const router = useRouter();
@@ -70,6 +72,42 @@ const handleResultClick = (slide: any) => {
     });
   }
   handleClose();
+};
+
+// 格式化时间
+const formatDate = (dateString: string | Date) => {
+  const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  
+  if (diffDays === 0) {
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    if (diffHours === 0) {
+      const diffMinutes = Math.floor(diffMs / (1000 * 60));
+      return diffMinutes <= 1 ? t('search.modal.time.just-now') : t('search.modal.time.minutes-ago', diffMinutes);
+    }
+    return t('search.modal.time.hours-ago', diffHours);
+  } else if (diffDays === 1) {
+    return t('search.modal.time.yesterday');
+  } else if (diffDays < 7) {
+    return t('search.modal.time.days-ago', diffDays);
+  } else {
+    return date.toLocaleDateString('zh-CN', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+};
+
+// 处理状态映射
+const getStatusInfo = (status: string) => {
+  const statusMap: Record<string, { text: string; color: string }> = {
+    'completed': { text: t('search.modal.status.completed'), color: 'text-green-700 bg-green-100 dark:text-green-300 dark:bg-green-900' },
+    'failed': { text: t('search.modal.status.failed'), color: 'text-red-700 bg-red-100 dark:text-red-300 dark:bg-red-900' }
+  };
+  return statusMap[status] || { text: status, color: 'text-gray-700 bg-gray-100 dark:text-gray-300 dark:bg-gray-800' };
 };
 
 // 当前选中的搜索结果索引
@@ -153,16 +191,11 @@ defineExpose({
   >
     <div class="p-4 border-b border-surface-200 dark:border-surface-700">
       <div class="relative">
-        <!-- 搜索图标 -->
-        <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-surface-400">
-          <i class="pi pi-search"></i>
-        </div>
-        
         <InputText
           id="search-input"
           v-model="searchInput"
           @keydown="handleKeydown"
-          placeholder="搜索演示文稿..."
+          :placeholder="t('search.modal.placeholder')"
           class="w-full pl-12 pr-12 py-4 text-lg rounded-lg border border-surface-200 dark:border-surface-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
         />
         
@@ -178,14 +211,14 @@ defineExpose({
       
       <!-- 快捷键提示 -->
       <div class="flex items-center justify-between mt-2 text-xs text-surface-500 dark:text-surface-400">
-        <span>搜索标题、描述和内容</span>
+        <span>{{ t('search.modal.description') }}</span>
         <div class="flex items-center gap-2">
           <kbd class="px-1.5 py-0.5 bg-surface-100 dark:bg-surface-800 rounded text-xs">↑↓</kbd>
-          <span>导航</span>
+          <span>{{ t('search.modal.shortcuts.navigate') }}</span>
           <kbd class="px-1.5 py-0.5 bg-surface-100 dark:bg-surface-800 rounded text-xs">Enter</kbd>
-          <span>选择</span>
+          <span>{{ t('search.modal.shortcuts.select') }}</span>
           <kbd class="px-1.5 py-0.5 bg-surface-100 dark:bg-surface-800 rounded text-xs">Esc</kbd>
-          <span>关闭</span>
+          <span>{{ t('search.modal.shortcuts.close') }}</span>
         </div>
       </div>
     </div>
@@ -193,15 +226,14 @@ defineExpose({
     <div class="p-4 max-h-96 overflow-y-auto">
       <!-- 空状态 - 未输入搜索词 -->
       <div class="text-center py-8 text-surface-500 dark:text-surface-400" v-if="!searchInput.trim()">
-        <i class="pi pi-search text-4xl mb-3"></i>
-        <p class="text-lg">输入关键词开始搜索</p>
-        <p class="text-sm mt-1">查找演示文稿、主题等内容</p>
+        <p class="text-lg">{{ t('search.modal.empty.title') }}</p>
+        <p class="text-sm mt-1">{{ t('search.modal.empty.subtitle') }}</p>
       </div>
       
       <!-- 加载状态 -->
       <div class="text-center py-8" v-else-if="slidesSearchStore.isLoading">
         <ProgressSpinner style="width: 40px; height: 40px" strokeWidth="4" />
-        <p class="text-surface-500 dark:text-surface-400 mt-3">正在搜索...</p>
+        <p class="text-surface-500 dark:text-surface-400 mt-3">{{ t('search.modal.loading') }}</p>
       </div>
       
       <!-- 错误状态 -->
@@ -217,14 +249,14 @@ defineExpose({
         <!-- 有结果 -->
         <div v-if="slidesSearchStore.searchResult.total > 0">
           <div class="text-surface-500 dark:text-surface-400 text-sm mb-3">
-            找到 {{ slidesSearchStore.searchResult.total }} 个结果
+            {{ t('search.modal.results.found', slidesSearchStore.searchResult.total) }}
           </div>
           <div class="space-y-2">
             <div 
               v-for="(slide, index) in slidesSearchStore.searchResult.slides" 
               :key="slide.id"
               :class="[
-                'search-result-item p-3 border border-surface-200 dark:border-surface-700 rounded-lg cursor-pointer transition-colors',
+                'search-result-item p-4 border border-surface-200 dark:border-surface-700 rounded-lg cursor-pointer transition-all duration-200',
                 index === selectedResultIndex 
                   ? 'bg-primary-50 dark:bg-primary-900 border-primary-200 dark:border-primary-700' 
                   : 'hover:bg-surface-100 dark:hover:bg-surface-800'
@@ -232,17 +264,47 @@ defineExpose({
               @click="handleResultClick(slide)"
               @mouseenter="selectedResultIndex = index"
               @mouseleave="selectedResultIndex = -1"
-            >  
-            <h2>{{ slide.title }}</h2>
+            >
+              <!-- 标题和状态 -->
+              <div class="flex items-start justify-between mb-2">
+                <h3 class="text-lg font-semibold text-surface-900 dark:text-surface-100 line-clamp-1 flex-1 mr-3">
+                  {{ slide.title }}
+                </h3>
+                <div 
+                  :class="[
+                    'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap',
+                    getStatusInfo(slide.processingStatus).color
+                  ]"
+                >
+                  {{ getStatusInfo(slide.processingStatus).text }}
+                </div>
+              </div>
+              
+              <!-- 用户和时间信息 -->
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-surface-600 dark:text-surface-400 gap-2 sm:gap-0">
+                <div class="flex items-center">
+                  <i class="pi pi-user mr-1.5"></i>
+                  <span>{{ slide.user.username }}</span>
+                </div>
+                <div class="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm">
+                  <div class="flex items-center">
+                    <i class="pi pi-calendar-plus mr-1.5"></i>
+                    <span>{{ t('search.modal.time.created') }} {{ formatDate(slide.createdAt) }}</span>
+                  </div>
+                  <div class="flex items-center" v-if="slide.updatedAt !== slide.createdAt">
+                    <i class="pi pi-calendar-clock mr-1.5"></i>
+                    <span>{{ t('search.modal.time.updated') }} {{ formatDate(slide.updatedAt) }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
         
         <!-- 无结果 -->
         <div v-else class="text-center py-8 text-surface-500 dark:text-surface-400">
-          <i class="pi pi-search text-3xl mb-3"></i>
-          <p class="text-base">未找到相关内容</p>
-          <p class="text-sm mt-1">尝试使用不同的关键词搜索</p>
+          <p class="text-base">{{ t('search.modal.no-results.title') }}</p>
+          <p class="text-sm mt-1">{{ t('search.modal.no-results.subtitle') }}</p>
         </div>
       </div>
     </div>
@@ -250,6 +312,14 @@ defineExpose({
 </template>
 
 <style scoped>
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -266,6 +336,21 @@ defineExpose({
 .search-result-item:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 深色模式下的悬停效果 */
+.dark .search-result-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* 状态标签动画 */
+.search-result-item .pi-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* 键盘快捷键样式 */

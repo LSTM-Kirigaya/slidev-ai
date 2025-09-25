@@ -61,5 +61,12 @@ export interface searchSlidesRes {
     slides: Array<{
         id: number;
         title: string;
+        createdAt: Date;
+        updatedAt: Date;
+        processingStatus: string;
+        user: {
+            id: number;
+            username: string;
+        };
     }>;
 }
