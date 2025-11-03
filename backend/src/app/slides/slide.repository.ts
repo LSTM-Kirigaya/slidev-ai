@@ -80,7 +80,7 @@ export class SlideRepository {
         await this.slideRepository.softDelete(id);
     }
 
-    async search(query: string,userId: number|null): Promise<searchSlidesRes> {
+    async search(query: string,userId: number | null = null): Promise<searchSlidesRes> {
     const [slides, total] = await this.slideRepository
         .createQueryBuilder('slide')
         .select([
