@@ -18,7 +18,7 @@ English | [中文](README.zh.md) | [Video](https://www.bilibili.com/video/BV1SMh
 
 Slidev-AI is a web app that leverages LLM (Large Language Model) technology to make creating Slidev-based online presentations elegant and effortless. It is designed to help engineers and academics quickly produce content-focused, minimalist PPTs that are easily shareable online.
 
-> This project is also my submission for the [ModelScope MCP&Agent Competition](https://modelscope.cn/active/aihackathon-mcp-agent).
+> 🎉 SlidevAI received the Best Application Award in [ModelScope MCP&Agent Competition](https://modelscope.cn/active/aihackathon-mcp-agent).
 
 slidev-ai is a downstream implementation within the [OpenMCP](https://github.com/LSTM-Kirigaya/openmcp-client) ecosystem, demonstrating how developers can build specialized agents using OpenMCP's powerful framework. This project serves as:
 
