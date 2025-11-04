@@ -112,8 +112,24 @@ RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile --production=true; 
 COPY --from=builder /app/dist ./dist
 
 
+# Validate required environment variables at build time
+RUN node -e "\
+  const requiredEnvVars = ['OPENAI_API_KEY', 'OPENAI_BASE_URL', 'OPENAI_MODEL']; \
+  const errors = []; \
+  requiredEnvVars.forEach(envVar => { \
+    if (!process.env[envVar] || process.env[envVar].length === 0) { \
+      errors.push(envVar); \
+    } \
+  }); \
+  if (errors.length > 0) { \
+    console.error('以下环境变量需要设置:'); \
+    errors.forEach(err => console.error(' - ' + err)); \
+    process.exit(1); \
+  } \
+"
+
 # Optional: seed sqlite if present (will be overridden when mounting a volume)
-COPY database.sqlite ./database.sqlite
+RUN if [ -f database.sqlite ]; then cp database.sqlite ./database.sqlite; fi
 
 # Ensure runtime dirs exist (also created at app start)
 RUN mkdir -p ./dist/uploads ./presentation
