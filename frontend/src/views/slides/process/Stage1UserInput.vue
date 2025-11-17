@@ -260,6 +260,7 @@ onMounted(async () => {
                             rows="10"
                             class="w-full"
                             :disabled="loading"
+                            @keydown.enter.stop
                         />
                     </div>
 
