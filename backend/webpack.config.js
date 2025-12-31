@@ -1,5 +1,4 @@
 const path = require('path');
-const webpack = require('webpack');
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -24,13 +23,33 @@ module.exports = {
         'bcryptjs': 'commonjs bcryptjs',
         'sqlite3': 'commonjs sqlite3',
         'typeorm': 'commonjs typeorm',
+        'duckdb': 'commonjs duckdb',
+        'aws-sdk': 'commonjs aws-sdk',
+        'nock': 'commonjs nock',
+        'mock-aws-s3': 'commonjs mock-aws-s3',
     },
+    externalsPresets: { node: true }, // This helps with native node modules
     module: {
         rules: [
             {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
                 exclude: /node_modules/,
+            },
+            // Handle binary files and other non-JS files
+            {
+                test: /\.(node|png|jpe?g|gif|svg|webp|woff|woff2|eot|ttf|otf)$/,
+                type: 'asset/resource',
+            },
+            // Handle HTML files
+            {
+                test: /\.html$/,
+                type: 'asset/source',
+            },
+            // Handle C# files
+            {
+                test: /\.cs$/,
+                type: 'asset/source',
             },
         ],
     },

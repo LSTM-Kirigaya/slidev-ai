@@ -17,17 +17,27 @@
 
 ## 🚀 项目简介
 
-Slidev-AI 是一个基于 LLM（大语言模型）的 Web 应用，它能让创建基于 Slidev 的在线演示文稿变得优雅而轻松。  
+Slidev-AI 是一个基于 LLM（大语言模型）的 Web 应用，它能让创建基于 Slidev 的在线演示文稿变得优雅而轻松。
 它的设计目标是帮助工程师与学术人员快速生成内容为中心、简洁美观且易于在线分享的 PPT。
 
 > 本项目同时是我参加 [ModelScope MCP&Agent Competition](https://modelscope.cn/active/aihackathon-mcp-agent) 的作品。
 
-slidev-ai 是 [OpenMCP](https://github.com/LSTM-Kirigaya/openmcp-client) 生态下的一个下游实现，展示了开发者如何利用 OpenMCP 的强大框架构建专用 Agent。  
+slidev-ai 是 [OpenMCP](https://github.com/LSTM-Kirigaya/openmcp-client) 生态下的一个下游实现，展示了开发者如何利用 OpenMCP 的强大框架构建专用 Agent。
 该项目的定位包括：
 
 - OpenMCP Agent 开发的参考实现
 - 可直接用于生产环境的演示文稿生成方案
 - 构建领域专用 AI Agent 的模板
+
+## 🎯 设计边界
+
+### Slidev AI 能做什么
+
+Slidev AI 专为这样的场景设计：你有一段信息密度高的文本素材，只想要用 PPT 的形式来展示这段文本素材并施加一段演讲。典型代表：组会报告，内部技术报告。
+
+### Slidev AI 不能做什么
+
+一段你自己都不知道是讲什么的文字，你想要让 slidev ai 按照你的意思理解它并制作符合你的上下文的PPT，抱歉，slidev ai 做不到，请另寻高明，典型代码：论文解读 PPT，公司年度报表。
 
 请在B站上查看介绍视频： 
 

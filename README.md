@@ -26,6 +26,16 @@ slidev-ai is a downstream implementation within the [OpenMCP](https://github.com
 - A production-ready presentation generation solution
 - A template for creating domain-specific AI agents
 
+## 🎯 Design Boundary
+
+### What Slidev AI Can Do
+
+Slidev AI is designed for scenarios where you have a high-density text material that you want to present in PPT format along with a speech. It's perfect for creating presentations from well-structured content where the main purpose is to convert text into visual slides. Typical use cases include: team meeting reports, internal technical presentations.
+
+### What Slidev AI Cannot Do
+
+Slidev AI cannot understand and interpret text that you yourself don't fully comprehend, nor can it create PPTs that conform to your specific contextual requirements. It cannot deeply analyze and restructure unclear content. Typical scenarios that are not suitable for Slidev AI include: paper interpretation PPTs, company annual reports, where the content requires deep understanding and contextual adaptation.
+
 
 
 Check out the full demo on Bilibili: 
