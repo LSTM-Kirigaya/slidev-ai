@@ -4,8 +4,7 @@ import { onMounted } from 'vue';
 import Navbar from './components/Navbar.vue';
 import { useAuthStore } from './store/auth';
 import Toast from 'primevue/toast';
-import Divider from 'primevue/divider';
-
+import Footer from './components/Footer.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -36,14 +35,7 @@ onMounted(() => {
     <div class="glow-ball-sm"></div>
 
     <!-- Footer -->
-    <Divider />
-    <div class="text-center p-4 text-gray-500 text-sm">
-        Slidev AI - 由
-        <a href="https://kirigaya.cn/about" target="_blank" class="text-primary">锦恢</a>
-        和
-        <a href="https://peacesheep.xyz/home" target="_blank" class="text-primary">太平羊羊</a>
-        共同呈现
-    </div>
+    <Footer />
 </template>
 
 <style>
@@ -122,12 +114,15 @@ body {
 
 .glow-ball-lg {
     position: fixed;
-    top: -10%;       /* 稍微溢出，避免球体压住内容 */
+    top: -10%;
+    /* 稍微溢出，避免球体压住内容 */
     left: -10%;
-    width: 45vw;     /* 占宽度约 35% */
+    width: 45vw;
+    /* 占宽度约 35% */
     height: 45vw;
     border-radius: 50%;
-    background: rgba(95, 164, 250, 0.15); /* 半透明蓝色，柔和 */
+    background: rgba(95, 164, 250, 0.15);
+    /* 半透明蓝色，柔和 */
     filter: blur(140px);
     z-index: -1;
     pointer-events: none;
@@ -145,7 +140,8 @@ body {
     width: 25vw;
     height: 25vw;
     border-radius: 50%;
-    background: rgba(139, 92, 246, 0.15); /* 紫色 */
+    background: rgba(139, 92, 246, 0.15);
+    /* 紫色 */
     filter: blur(140px);
     z-index: -1;
     pointer-events: none;
@@ -154,5 +150,5 @@ body {
 .my-app-dark .glow-ball-sm {
     background: rgba(139, 92, 246, 0.15);
 }
-
 </style>
+

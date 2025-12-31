@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import { API_BASE_URL, UPLOADS_BASE_URL } from '@/utils/api'
 import { useRouter } from 'vue-router'
-import {t} from '@/i18n/index'
+import { t } from '@/i18n/index'
 const slides = ref([])
 const loading = ref(true)
 const error = ref('')
@@ -43,61 +43,82 @@ onMounted(fetchSlides)
 </script>
 
 <template>
-    <div class="dashboard p-6">
-        <!-- Loading -->
-        <div v-if="loading" class="flex flex-col items-center justify-center py-12 text-gray-500">
-            <i class="pi pi-spin pi-spinner text-2xl mb-3"></i>
-            {{ t('common.loading.slides') }}
+    <div class="dashboard p-6 max-w-7xl mx-auto min-h-screen">
+        <header class="mb-8 flex justify-between items-end">
+            <div>
+            </div>
+        </header>
+
+        <div v-if="loading" class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div v-for="i in 8" :key="i"
+                class="animate-pulse bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm">
+                <div class="bg-gray-200 dark:bg-gray-700 h-48 w-full"></div>
+                <div class="p-4 space-y-3">
+                    <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div class="flex items-center space-x-2">
+                        <div class="rounded-full bg-gray-200 h-8 w-8"></div>
+                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Error -->
-        <div v-else-if="error">
-            <Message severity="error">{{ error }}</Message>
+        <div v-else-if="error" class="flex flex-col items-center py-20">
+            <Message severity="error" variant="outline">{{ error }}</Message>
+            <Button icon="pi pi-refresh" label="重试" @click="fetchSlides" class="mt-4 p-button-text" />
         </div>
 
-        <!-- Content -->
         <div v-else>
-            <!-- Empty State -->
-            <div v-if="sortedSlides.length === 0" class="text-center p-10 rounded-lg p-card">
-                <h2 class="text-xl font-semibold mb-2">{{ t('info.public-slide.no-public-slide') }}</h2>
-                <p class="mb-4 text-gray-500">{{ t('info.public-slide.check-back-later') }}</p>
+            <div v-if="sortedSlides.length === 0" class="flex flex-col items-center justify-center py-24 text-center">
+                <div class="bg-gray-100 dark:bg-gray-800 p-6 rounded-full mb-4">
+                    <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                </div>
+                <h2 class="text-xl font-semibold mb-2 text-gray-700 dark:text-gray-200">{{
+                    t('info.public-slide.no-public-slide') }}</h2>
+                <p class="text-gray-500">{{ t('info.public-slide.check-back-later') }}</p>
             </div>
 
-            <!-- Slide Cards -->
-            <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 <div v-for="slide in sortedSlides" :key="slide.id"
-                    class="slide-card cursor-pointer rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white dark:bg-gray-800"
+                    class="group relative flex flex-col bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 dark:border-gray-700 overflow-hidden cursor-pointer"
                     @click="gotoPreview(slide)">
-                    <!-- Thumbnail -->
-                    <div
-                        class="w-full h-48 rounded-t-xl overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                    <div class="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-900">
                         <img v-if="slide.coverFilename" :src="getCoverImageUrl(slide.coverFilename)" :alt="slide.title"
-                            class="w-full h-full object-cover" />
-                        <i v-else class="pi pi-image text-5xl text-gray-400"></i>
+                            class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                            loading="lazy" />
+                        <div v-else class="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                            <i class="pi pi-image text-4xl mb-2 opacity-50"></i>
+                            <span class="text-xs uppercase tracking-wider">No Preview</span>
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <span
+                                class="bg-white text-gray-900 px-4 py-2 rounded-full font-medium text-sm flex items-center gap-2">
+                                <i class="pi pi-eye"></i> 预览
+                            </span>
+                        </div>
                     </div>
 
-                    <!-- Info -->
-                    <div class="p-4 flex flex-col gap-2">
-                        <span class="font-semibold text-lg text-gray-900 dark:text-gray-100 truncate">{{ slide.title
-                        }}</span>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <h3 class="font-bold text-gray-800 dark:text-gray-100 mb-3 line-clamp-1 group-hover:text-primary-500 transition-colors"
+                            :title="slide.title">
+                            {{ slide.title }}
+                        </h3>
 
-                        <div class="flex items-center gap-2 text-sm text-gray-500"
-                            @click.stop="router.push(`/profile/${slide.user?.id}`)"
-                        >
-
+                        <div class="flex items-center gap-3 mt-auto pt-3 border-t border-gray-50 dark:border-gray-700/50 hover:opacity-80 transition-opacity"
+                            @click.stop="router.push(`/profile/${slide.user?.id}`)">
                             <Avatar v-if="slide.user?.avatar"
                                 :image="`${UPLOADS_BASE_URL}/avatars/${slide.user?.avatar}`" shape="circle"
-                                class="cursor-pointer" :title="t('common.user.profile-title')"
-                            />
-                            <Avatar v-else :label="slide.user?.username.charAt(0).toUpperCase()" shape="circle"
-                                class="cursor-pointer" :title="t('common.user.profile-title')"
-                            />
-                            <span class="text-primary-200">{{ slide.user?.username || t('common.user.anonymous') }}</span>
-                        </div>
-
-                        <div class="text-sm text-gray-500">
-                            <span>{{ t('info.public-slide.created-at') }} {{ formatDate(slide.createdAt) }}</span> |
-                            <span>{{ t('info.public-slide.updated-at') }} {{ formatDate(slide.updatedAt) }}</span>
+                                size="normal" />
+                            <Avatar v-else :label="slide.user?.username?.charAt(0).toUpperCase()" shape="circle"
+                                class="bg-primary-100 text-primary-700" />
+                            <div class="flex flex-col">
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{
+                                    slide.user?.username || '匿名用户' }}</span>
+                                <span class="text-[10px] text-gray-400 uppercase tracking-tighter">
+                                    {{ formatDate(slide.createdAt) }}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>

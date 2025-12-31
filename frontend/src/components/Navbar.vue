@@ -126,7 +126,7 @@ const items = computed(() => {
         <template #start>
             <div class="flex items-center gap-2">
                 <img src="/favicon.svg" alt="logo" class="w-8 h-8" />
-                <span class="font-bold text-xl slidev-ai-title">Slidev AI</span>
+                <span class="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-primary-700">Slidev AI</span>
             </div>
         </template>
 
