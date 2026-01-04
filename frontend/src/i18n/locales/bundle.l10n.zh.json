@@ -317,5 +317,16 @@
     "search.modal.time.minutes-ago": "{0}分钟前",
     "search.modal.time.hours-ago": "{0}小时前",
     "search.modal.time.yesterday": "昨天",
-    "search.modal.time.days-ago": "{0}天前"
+    "search.modal.time.days-ago": "{0}天前",
+    "dashboard.action.source": "源码",
+    "dashboard.source.header": "源码编辑器",
+    "dashboard.source.deploy": "部署",
+    "dashboard.source.save": "保存",
+    "dashboard.source.close": "关闭",
+    "dashboard.source.info": "编辑源码将直接更新演示文稿",
+    "common.error.fetch-source": "获取源码失败",
+    "common.error.save-source": "保存源码失败",
+    "common.error.deploy": "部署幻灯片失败",
+    "common.saved": "保存成功",
+    "common.deployed": "部署成功"
 }

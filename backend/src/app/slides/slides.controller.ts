@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param, UseGuards, Request, Query, UploadedFile, Sse, Res, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Request, Query, UploadedFile, Sse, Res, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { SlidesService } from './slides.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request as ExpressRequest, Response } from 'express';
@@ -321,6 +321,44 @@ export class SlidesController {
         @Body() body: searchSlidesReq
     ) {
         return this.slideRepository.search(body.query);
+    }
+
+    @UseGuards(JwtAuthGuard, PrivateSlideOwnerGuard)
+    @Get(':id/source')
+    @ApiOperation({ summary: '获取幻灯片源代码' })
+    @ApiBearerAuth()
+    @ApiParam({ name: 'id', description: '幻灯片 ID' })
+    @ApiOkResponse({ description: '返回幻灯片的 Markdown 源代码' })
+    async getSlideSource(
+        @Param('id') id: number,
+    ) {
+        return this.slidesService.getSlideSource(id);
+    }
+
+    @UseGuards(JwtAuthGuard, PrivateSlideOwnerGuard)
+    @Put(':id/source')
+    @ApiOperation({ summary: '更新幻灯片源代码' })
+    @ApiBearerAuth()
+    @ApiParam({ name: 'id', description: '幻灯片 ID' })
+    @ApiBody({ description: '源代码内容', schema: { type: 'object', properties: { source: { type: 'string' } } } })
+    @ApiOkResponse({ description: '返回更新结果' })
+    async updateSlideSource(
+        @Param('id') id: number,
+        @Body() body: { source: string }
+    ) {
+        return this.slidesService.updateSlideSource(id, body.source);
+    }
+
+    @UseGuards(JwtAuthGuard, PrivateSlideOwnerGuard)
+    @Post(':id/deploy')
+    @ApiOperation({ summary: '部署幻灯片' })
+    @ApiBearerAuth()
+    @ApiParam({ name: 'id', description: '幻灯片 ID' })
+    @ApiOkResponse({ description: '返回部署结果' })
+    async deploySlide(
+        @Param('id') id: number,
+    ) {
+        return this.slidesService.deploySlide(id);
     }
 
     @UseGuards(JwtAuthGuard)

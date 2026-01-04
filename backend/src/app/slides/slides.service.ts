@@ -365,6 +365,53 @@ export class SlidesService {
 
         return slidePath;
     }
+
+    async getSlideSource(id: number): Promise<{ source: string }> {
+        const slide = await this.slidesRepository.findOneById(id);
+        if (!slide) {
+            throw new Error('Slide not found');
+        }
+
+        const absolutePath = this.getSlidePrjAbsolutePath(slide);
+        if (!absolutePath || !fs.existsSync(absolutePath)) {
+            throw new Error('Slide source file not found');
+        }
+
+        const source = await fs.readFile(absolutePath, 'utf-8');
+        return { source };
+    }
+
+    async updateSlideSource(id: number, source: string): Promise<{ success: boolean }> {
+        const slide = await this.slidesRepository.findOneById(id);
+        if (!slide) {
+            throw new Error('Slide not found');
+        }
+
+        const absolutePath = this.getSlidePrjAbsolutePath(slide);
+        if (!absolutePath) {
+            throw new Error('Slide project path not found');
+        }
+
+        // Ensure directory exists
+        const dirPath = path.dirname(absolutePath);
+        await fs.ensureDir(dirPath);
+
+        // Write the new source to the file
+        await fs.writeFile(absolutePath, source, 'utf-8');
+
+        // Update the processing status to reflect that markdown has been modified
+        await this.slidesRepository.update(id, {
+            processingStatus: 'markdown-saved'
+        });
+
+        return { success: true };
+    }
+
+    async deploySlide(id: number): Promise<{ success: boolean }> {
+        // For deployment, we'll rebuild the slidev project
+        const result = await this.buildSlidevProject(id);
+        return { success: result.code === STATUS_CODE.SUCCESS };
+    }
     async buildSlidevProject(id: number): Promise<BaseResponse> {
         try {
             await this.slideLock.withLock(id, 'build-slidev', async () => {

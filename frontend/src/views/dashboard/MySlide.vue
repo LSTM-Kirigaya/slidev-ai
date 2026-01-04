@@ -16,6 +16,9 @@ import { API_BASE_URL } from '@/utils/api'
 import axios from 'axios'
 import { t } from '@/i18n/index'
 
+// Import SourceCodeDialog component
+import SourceCodeDialog from '@/components/SourceCodeDialog.vue'
+
 const router = useRouter()
 const slides = ref([])
 const loading = ref(true)
@@ -23,6 +26,11 @@ const error = ref('')
 const visibility = ref('all')
 const confirm = useConfirm()
 const toast = useToast()
+
+// Source code editor state
+const showSourceDialog = ref(false)
+const currentSlideId = ref('')
+const currentSlideTitle = ref('')
 
 const visibilityOptions = [
     { label: t('dashboard.filter.all'), value: 'all' },
@@ -96,6 +104,31 @@ const getCoverImageUrl = (coverFilename: string) =>
 
 const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString()
 
+// Source code editor methods
+const showSourceCode = async (id: string, title: string) => {
+    currentSlideId.value = id
+    currentSlideTitle.value = title
+    showSourceDialog.value = true
+}
+
+const handleSourceSaved = () => {
+    toast.add({
+        severity: 'success',
+        summary: t('success'),
+        detail: t('common.saved'),
+        life: 3000
+    })
+}
+
+const handleSourceDeployed = () => {
+    toast.add({
+        severity: 'success',
+        summary: t('success'),
+        detail: t('common.deployed'),
+        life: 3000
+    })
+}
+
 onMounted(fetchSlides)
 </script>
 
@@ -107,8 +140,10 @@ onMounted(fetchSlides)
         <!-- Header -->
         <div class="flex justify-between items-center mb-6">
             <div class="flex gap-2">
-                <Button icon="pi pi-plus" :label="t('dashboard.button.new')" class="p-button-rounded" @click="createNewSlide" />
-                <Button icon="pi pi-upload" :label="t('dashboard.button.import')" class="p-button-rounded p-button-outlined" @click="importSlide" />
+                <Button icon="pi pi-plus" :label="t('dashboard.button.new')" class="p-button-rounded"
+                    @click="createNewSlide" />
+                <Button icon="pi pi-upload" :label="t('dashboard.button.import')"
+                    class="p-button-rounded p-button-outlined" @click="importSlide" />
             </div>
             <Dropdown v-model="visibility" :options="visibilityOptions" optionLabel="label" optionValue="value"
                 class="w-40" :disabled="loading" :placeholder="t('dashboard.filter.placeholder')" />
@@ -175,8 +210,7 @@ onMounted(fetchSlides)
                                 <!-- Visibility & Status -->
                                 <div class="flex items-center gap-2 mb-2">
                                     <Tag :value="slide.visibility === 'public' ? t('dashboard.tag.public') : t('dashboard.tag.private')"
-                                        :severity="slide.visibility === 'public' ? 'success' : 'secondary'"
-                                    />
+                                        :severity="slide.visibility === 'public' ? 'success' : 'secondary'" />
                                     <Tag :value="slide.processingStatus === 'completed' ? t('dashboard.status.completed') : t('dashboard.status.processing')"
                                         :severity="getStatusTag(slide.processingStatus).severity" />
                                 </div>
@@ -195,6 +229,10 @@ onMounted(fetchSlides)
                                         <Button icon="pi pi-pencil" severity="info" text size="small"
                                             @click.stop="editSlide(slide.id)" />
                                     </div>
+                                    <div class="action-btn" :data-label="t('dashboard.action.source')">
+                                        <Button icon="pi pi-code" severity="secondary" text size="small"
+                                            @click.stop="showSourceCode(slide.id, slide.title)" />
+                                    </div>
                                     <div class="action-btn" :data-label="t('dashboard.action.delete')">
                                         <Button icon="pi pi-trash" severity="danger" text size="small"
                                             @click.stop="deleteSlide(slide.id, slide.title)" />
@@ -206,8 +244,12 @@ onMounted(fetchSlides)
                 </template>
             </DataView>
         </div>
+
+        <!-- Source Code Dialog Component -->
+        <SourceCodeDialog v-model="showSourceDialog" :slide-id="currentSlideId" :slide-title="currentSlideTitle"
+            @saved="handleSourceSaved" @deployed="handleSourceDeployed" />
     </div>
-    
+
 </template>
 
 

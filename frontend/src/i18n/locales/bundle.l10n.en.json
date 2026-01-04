@@ -317,5 +317,16 @@
     "search.modal.time.minutes-ago": "{0} minutes ago",
     "search.modal.time.hours-ago": "{0} hours ago",
     "search.modal.time.yesterday": "Yesterday",
-    "search.modal.time.days-ago": "{0} days ago"
+    "search.modal.time.days-ago": "{0} days ago",
+    "dashboard.action.source": "Source",
+    "dashboard.source.header": "Source Code Editor",
+    "dashboard.source.deploy": "Deploy",
+    "dashboard.source.save": "Save",
+    "dashboard.source.close": "Close",
+    "dashboard.source.info": "Editing the source code will update the presentation directly",
+    "common.error.fetch-source": "Failed to fetch source code",
+    "common.error.save-source": "Failed to save source code",
+    "common.error.deploy": "Failed to deploy slide",
+    "common.saved": "Saved successfully",
+    "common.deployed": "Deployed successfully"
 }
