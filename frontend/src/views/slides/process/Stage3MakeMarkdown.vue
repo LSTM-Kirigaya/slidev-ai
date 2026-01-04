@@ -11,6 +11,7 @@ import { useSlidesStore } from '@/store/slide';
 import axios from 'axios';
 import { API_BASE_URL, PREVIEW_URL } from '@/utils/api';
 import ProcessSteps from '@/components/ProcessSteps.vue';
+import SourceCodeDialog from '@/components/SourceCodeDialog.vue';
 import { t } from '@/i18n';
 import STATUS_CODE from '@/constant/status-code';
 import { IamBusy, IamFree } from '@/utils/loading';
@@ -39,6 +40,10 @@ const hasFinished = ref<boolean>(false);
 const isBusy = ref<boolean>(false);
 
 const messages = ref<MessageItem[]>([]);
+
+// Source code editor state
+const showSourceDialog = ref(false);
+const currentSlideTitle = ref('');
 
 // Methods
 const handleSSEError = (event: Event) => {
@@ -370,6 +375,41 @@ const previewSlide = async () => {
     toast.remove(buildingMessage);
 };
 
+const showSourceCode = async () => {
+    try {
+        // Get the slide data to get the title
+        const slideData = await slidesStore.getSlideById(props.id);
+        if (slideData) {
+            currentSlideTitle.value = slideData.title;
+        } else {
+            currentSlideTitle.value = `Slide ${props.id}`;
+        }
+        showSourceDialog.value = true;
+    } catch (err) {
+        console.error('Error fetching slide data:', err);
+        currentSlideTitle.value = `Slide ${props.id}`;
+        showSourceDialog.value = true;
+    }
+};
+
+const handleSourceSaved = () => {
+    toast.add({
+        severity: 'success',
+        summary: t('success'),
+        detail: t('common.saved'),
+        life: 3000
+    })
+}
+
+const handleSourceDeployed = () => {
+    toast.add({
+        severity: 'success',
+        summary: t('success'),
+        detail: t('common.deployed'),
+        life: 3000
+    })
+}
+
 const formatTimestamp = (timestamp?: number) => {
     if (!timestamp) return '';
     return new Date(timestamp).toLocaleTimeString();
@@ -450,9 +490,11 @@ onUnmounted(() => {
                     <div v-if="!isProcessing" class="text-center py-10">
                         <i class="pi pi-check-circle text-4xl text-green-500 mb-4"></i>
                         <p class="text-gray-600">{{ t('process.markdown.completed-success') }}</p>
-                        <div class="flex justify-center gap-2 mt-4">
-                            <Button :label="t('process.markdown.preview')" icon="pi pi-eye" class="mr-2" @click="previewSlide"
+                        <div class="flex flex-wrap justify-center gap-2 mt-4">
+                            <Button :label="t('process.markdown.preview')" icon="pi pi-eye" @click="previewSlide"
                                 :disabled="isButtonDisabled" />
+                            <Button :label="t('process.markdown.source')" icon="pi pi-code" @click="showSourceCode"
+                                :disabled="isButtonDisabled" severity="secondary" outlined />
                             <Button :label="t('process.markdown.regenerate')" icon="pi pi-refresh" severity="warning" @click="initializeSSE"
                                 :disabled="isButtonDisabled" />
                             <Button :label="t('process.markdown.deploy')" icon="pi pi-send" severity="success" @click="buildSlidevProject"
@@ -461,14 +503,16 @@ onUnmounted(() => {
                     </div>
                 </div>
             </template>
-
-            <template #footer>
-                <div class="flex justify-between items-center">
-                    <Button :label="t('process.markdown.cancel')" icon="pi pi-times" @click="cancelProcessing" severity="secondary"
-                        :disabled="!isProcessing" />
-                </div>
-            </template>
         </Card>
+
+        <!-- Source Code Dialog Component -->
+        <SourceCodeDialog
+            v-model="showSourceDialog"
+            :slide-id="props.id.toString()"
+            :slide-title="currentSlideTitle"
+            @saved="handleSourceSaved"
+            @deployed="handleSourceDeployed"
+        />
     </div>
 </template>
 
