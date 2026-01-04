@@ -35,7 +35,7 @@ export class AuthController {
     ) {
         // 检查是否存在有效的 JWT cookie
         const token = req.cookies?.jwt;
-        console.log('toekn', token);
+        console.log('token', token);
         
         if (token) {
             try {
@@ -94,7 +94,7 @@ export class AuthController {
         const user = await this.authService.validateUser(loginDto);
 
         if (!user) {
-            return { error: 'Invalid credentials' };
+            return { error: 'Invalid password or account does not exist' };
         }
         const { accessToken } = await this.authService.login(user);
 

@@ -191,7 +191,6 @@ onMounted(fetchSlides)
 
                                 <!-- Actions -->
                                 <div class="flex gap-5 mt-auto">
-
                                     <div class="action-btn" :data-label="t('dashboard.action.edit')">
                                         <Button icon="pi pi-pencil" severity="info" text size="small"
                                             @click.stop="editSlide(slide.id)" />
