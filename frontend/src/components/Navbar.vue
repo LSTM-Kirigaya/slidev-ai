@@ -3,7 +3,7 @@ import { ref, onMounted, computed, onUnmounted } from 'vue';
 import { setLanguage } from '@/i18n/index';
 import { t } from '@/i18n/index';
 import { useAppStore } from '@/store/website';
-import OverlayPanel from 'primevue/overlaypanel';
+import Popover from 'primevue/popover';
 import Listbox from 'primevue/listbox';
 import { useRoute, useRouter } from 'vue-router';
 import Menubar from 'primevue/menubar';
@@ -18,7 +18,6 @@ const appStore = useAppStore();
 const route = useRoute();
 const router = useRouter();
 const searchModalVisible = ref(false);
-const searchModal = ref();
 
 const localeOptions = computed(() => [
     { label: 'English', value: 'en' },
@@ -30,7 +29,7 @@ const selectedLocaleItem = computed(() => {
 });
 
 const changeLocale = (event: any) => {
-    
+
     if (event.value) {
         appStore.setLocale(event.value);
         setLanguage(event.value.value);
@@ -50,16 +49,16 @@ const toggleDarkMode = () => {
 
 // 打开搜索模态框
 const openSearch = () => {
-  searchModalVisible.value = true;
+    searchModalVisible.value = true;
 };
 
 // 处理键盘快捷键
 const handleKeydown = (event: KeyboardEvent) => {
-  // Cmd/Ctrl + K 打开搜索
-  if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
-    event.preventDefault();
-    openSearch();
-  }
+    // Cmd/Ctrl + K 打开搜索
+    if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault();
+        openSearch();
+    }
 };
 
 // Initialize dark mode from localStorage or system preference
@@ -75,14 +74,14 @@ onMounted(() => {
             document.documentElement.classList.add('my-app-dark')
         }
     }
-    
+
     // 添加键盘事件监听器
     document.addEventListener('keydown', handleKeydown);
 });
 
 onUnmounted(() => {
-  // 移除键盘事件监听器
-  document.removeEventListener('keydown', handleKeydown);
+    // 移除键盘事件监听器
+    document.removeEventListener('keydown', handleKeydown);
 });
 
 // Define menu items
@@ -122,121 +121,157 @@ const items = computed(() => {
 </script>
 
 <template>
-    <Menubar :model="items">
-        <template #start>
-            <div class="flex items-center gap-2">
-                <img src="/favicon.svg" alt="logo" class="w-8 h-8" />
-                <span class="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-primary-700">Slidev AI</span>
-            </div>
-        </template>
-
-        <template #end>
-            <div class="flex items-center gap-2">
-                <div class="relative">
-                    <Button 
-                        outlined
-                        aria-label="Search"
-                        class="p-button-sm"
-                        @click="openSearch"
-                    >
-                        <i class="pi pi-search"></i>
-                        <span class="ml-1">{{ t('search') }}</span>
-                        <span class="ml-2 text-xs opacity-75">⌘K</span>
-                    </Button>
+    <nav class="navbar-wrapper sticky top-0 z-[100]">
+        <Menubar :model="items" class="custom-menubar">
+            <template #start>
+                <div class="flex items-center gap-2 mr-4 cursor-pointer hover:opacity-80 transition-opacity"
+                    @click="router.push('/')">
+                    <img src="/favicon.svg" alt="logo" class="w-8 h-8 drop-shadow-sm" />
+                    <span
+                        class="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-primary-500 to-primary-700">
+                        Slidev AI
+                    </span>
                 </div>
-                
-                <div class="relative">
-                    <Button 
-                        text 
-                        rounded 
-                        icon="pi pi-globe"
-                        severity="secondary" 
-                        aria-label="Language selector"
-                        @click="op.toggle($event)"
-                    />
-                    <OverlayPanel 
-                        ref="op" 
-                        :dismissable="true" 
-                        :pt="{ root: { class: 'p-0' } }"
-                        :autoZIndex="true"
-                    >
-                        <Listbox 
-                            :options="localeOptions" 
-                            optionLabel="label" 
-                            optionValue="value"
-                            :modelValue="selectedLocaleItem"
-                            @change="changeLocale"
-                            :pt="{
-                                root: { style: 'border: none; box-shadow: none;' },
-                                listContainer: { style: 'border: none;' }
-                            }"
-                        />
-                    </OverlayPanel>
-                </div>
-                
-                <Button 
-                    text 
-                    rounded 
-                    @click="toggleDarkMode"
-                    :icon="darkMode ? 'pi pi-moon' : 'pi pi-sun'" 
-                    severity="secondary" 
-                    aria-label="Dark mode toggle"
-                />
-                <a href="https://github.com/LSTM-Kirigaya/slidev-ai" target="_blank" rel="noopener noreferrer"
-                    class="text-2xl p-button p-button-text p-button-rounded h-[var(--p-button-icon-only-width)]">
-                    <i class="pi pi-github"></i>
-                </a>
+            </template>
 
-                <div v-if="route.path.startsWith('/reset-password')">
-
-                </div>
-                <div v-else>
-
-                    <div v-if="authStore.user" class="h-[32px] flex items-center gap-2">
-                        <Avatar v-if="authStore.user.avatar"
-                            :image="`${UPLOADS_BASE_URL}/avatars/${authStore.user.avatar}`" shape="circle"
-                            class="cursor-pointer" :title="t('nav.my-profile')"
-                            @click="router.push(`/profile/${authStore.user.id}`)" />
-                        <Avatar v-else :label="authStore.user.username.charAt(0).toUpperCase()" shape="circle"
-                            class="cursor-pointer" :title="t('nav.my-profile')"
-                            @click="router.push(`/profile/${authStore.user.id}`)" />
+            <template #end>
+                <div class="flex items-center gap-1.5 md:gap-3">
+                    <div class="hidden sm:block">
+                        <button @click="openSearch"
+                            class="search-trigger flex items-center gap-3 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-400 hover:border-primary-400 transition-all group">
+                            <i class="pi pi-search text-sm group-hover:text-primary-500"></i>
+                            <span class="text-sm">{{ t('search') }}</span>
+                            <kbd
+                                class="hidden lg:inline-flex items-center gap-1 px-1.5 font-sans text-[10px] font-medium text-gray-400 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded shadow-sm">
+                                ⌘K
+                            </kbd>
+                        </button>
                     </div>
-                    <Button v-else :label="t('auth.login.button')" @click="router.push('/login')"
-                        icon="pi pi-sign-in" />
+
+
+                    <div
+                        class="flex items-center gap-1 border-l border-gray-200 dark:border-gray-700 ml-1 pl-1 md:ml-2 md:pl-2">
+                        <Button text rounded icon="pi pi-globe" severity="secondary" @click="op.toggle($event)"
+                            class="nav-icon-btn" />
+
+                        <Button text rounded @click="toggleDarkMode" :icon="darkMode ? 'pi pi-moon' : 'pi pi-sun'"
+                            severity="secondary" class="nav-icon-btn" />
+
+                        <a href="https://github.com/LSTM-Kirigaya/slidev-ai" target="_blank"
+                            class="flex items-center justify-center w-10 h-10 rounded-full text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                            <i class="pi pi-github text-xl"></i>
+                        </a>
+                    </div>
+
+                    <div v-if="!route.path.startsWith('/reset-password')" class="ml-2">
+                        <div v-if="authStore.user" class="flex items-center">
+                            <Avatar v-if="authStore.user.avatar"
+                                :image="`${UPLOADS_BASE_URL}/avatars/${authStore.user.avatar}`" shape="circle"
+                                class="cursor-pointer ring-2 ring-transparent hover:ring-primary-500 transition-all"
+                                @click="router.push(`/profile/${authStore.user.id}`)" />
+                            <Avatar v-else :label="authStore.user.username.charAt(0).toUpperCase()" shape="circle"
+                                class="cursor-pointer bg-primary-100 text-primary-700"
+                                @click="router.push(`/profile/${authStore.user.id}`)" />
+                        </div>
+                        <Button v-else :label="t('auth.login.button')" size="small" rounded
+                            @click="router.push('/login')" icon="pi pi-sign-in" />
+                    </div>
+                </div>
+            </template>
+        </Menubar>
+
+        <Popover ref="op" :dismissable="true" class="custom-popover">
+            <div class="flex flex-col p-1 min-w-[120px]">
+                <div v-for="option in localeOptions" :key="option.value" @click="changeLocale({ value: option })"
+                    class="flex items-center justify-between px-3 py-2 rounded-md cursor-pointer transition-colors duration-200"
+                    :class="[
+                        appStore.locale === option.value
+                            ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
+                    ]">
+                    <span class="text-sm font-medium">{{ option.label }}</span>
+                    <i v-if="appStore.locale === option.value" class="pi pi-check text-xs"></i>
                 </div>
             </div>
-        </template>
-    </Menubar>
-    
-    <SearchModal 
-      v-model:visible="searchModalVisible" 
-      ref="searchModal"
-    />
+        </Popover>
+    </nav>
+
+    <SearchModal v-model:visible="searchModalVisible" ref="searchModal" />
 </template>
 
 <style scoped>
-
-.p-listbox {
-    background-color: unset !important;
+/* 容器支持毛玻璃 */
+.navbar-wrapper {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.navbar {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    z-index: 100;
+.my-app-dark .navbar-wrapper {
+    background: rgba(15, 23, 42, 0.7);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+/* 覆盖 PrimeVue 默认 Menubar 样式 */
 :deep(.p-menubar) {
-    border-radius: 0;
+    background: transparent !important;
     border: none;
-    padding: 0.5rem 1rem;
+    border-radius: 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
 }
 
+/* 搜索框快捷键样式 */
+.search-trigger {
+    width: 180px;
+    justify-content: space-between;
+}
 
-.slidev-ai-title {
-  background: linear-gradient(90deg, rgb(95, 164, 250), rgb(139, 92, 246));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+/* 统一图标按钮尺寸 */
+.nav-icon-btn {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+}
+
+:deep(.p-popover-content) {
+    padding: 0 !important;
+}
+
+/* 确保弹出层阴影和圆球背景呼应 */
+.custom-popover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    border-radius: 12px !important;
+}
+
+.my-app-dark .custom-popover {
+    background: #1e293b !important; /* 匹配深色背景 */
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 语言项交互动画 */
+.flex.items-center.justify-between:active {
+    transform: scale(0.98);
+}
+
+:deep(.p-listbox) {
+    border: none;
+    padding: 0.25rem;
+}
+
+:deep(.p-listbox-item) {
+    border-radius: 6px;
+    margin-bottom: 2px;
+}
+
+/* 菜单项悬停动画 */
+:deep(.p-menubar-item-link) {
+    transition: all 0.2s ease;
+}
+
+:deep(.p-menubar-item-link:hover) {
+    background: rgba(var(--primary-500), 0.1) !important;
 }
 </style>

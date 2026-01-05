@@ -234,47 +234,47 @@ defineExpose({
                     <div class="text-surface-500 dark:text-surface-400 text-sm mb-3">
                         {{ t('search.modal.results.found', slidesSearchStore.searchResult.total) }}
                     </div>
-                    <div class="space-y-2">
+                    <div class="space-y-1.5">
                         <div v-for="(slide, index) in slidesSearchStore.searchResult.slides" :key="slide.id" :class="[
-                            'search-result-item p-4 border border-surface-200 dark:border-surface-700 rounded-lg cursor-pointer transition-all duration-200',
+                            'group flex items-center p-3 rounded-xl cursor-pointer transition-all duration-200',
                             index === selectedResultIndex
-                                ? 'bg-primary-50 dark:bg-primary-900 border-primary-200 dark:border-primary-700'
-                                : 'hover:bg-surface-100 dark:hover:bg-surface-800'
+                                ? 'bg-primary-50 dark:bg-primary-900/30 border-primary-500 shadow-sm translate-x-1'
+                                : 'bg-transparent border-transparent hover:bg-surface-100 dark:hover:bg-surface-800'
                         ]" @click="handleResultClick(slide)" @mouseenter="selectedResultIndex = index"
                             @mouseleave="selectedResultIndex = -1">
-                            <!-- 标题和状态 -->
-                            <div class="flex items-start justify-between mb-2">
-                                <h3
-                                    class="text-lg font-semibold text-surface-900 dark:text-surface-100 line-clamp-1 flex-1 mr-3">
-                                    {{ slide.title }}
-                                </h3>
-                                <div :class="[
-                                    'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap',
-                                    getStatusInfo(slide.processingStatus).color
-                                ]">
-                                    {{ getStatusInfo(slide.processingStatus).text }}
+
+
+                            <div class="flex-1 min-w-0 mr-4">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <h3 class="font-bold text-surface-900 dark:text-surface-100 truncate">
+                                        {{ slide.title }}
+                                    </h3>
+                                    <span v-if="slide.processingStatus !== 'completed'"
+                                        class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 uppercase tracking-tighter">
+                                        {{ getStatusInfo(slide.processingStatus).text }}
+                                    </span>
+                                </div>
+
+                                <div
+                                    class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-surface-500 dark:text-surface-400">
+                                    <div class="flex items-center gap-1.5">
+                                        <i class="pi pi-user text-[10px] opacity-70"></i>
+                                        <span class="font-medium">{{ slide.user.username }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <i class="pi pi-clock text-[10px] opacity-70"></i>
+                                        <span>{{ formatDate(slide.updatedAt) }}</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- 用户和时间信息 -->
-                            <div
-                                class="flex flex-col sm:flex-row sm:items-center sm:justify-between text-sm text-surface-600 dark:text-surface-400 gap-2 sm:gap-0">
-                                <div class="flex items-center">
-                                    <i class="pi pi-user mr-1.5"></i>
-                                    <span>{{ slide.user.username }}</span>
-                                </div>
-                                <div class="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm">
-                                    <div class="flex items-center">
-                                        <i class="pi pi-calendar-plus mr-1.5"></i>
-                                        <span>{{ t('search.modal.time.created') }} {{ formatDate(slide.createdAt)
-                                            }}</span>
-                                    </div>
-                                    <div class="flex items-center" v-if="slide.updatedAt !== slide.createdAt">
-                                        <i class="pi pi-calendar-clock mr-1.5"></i>
-                                        <span>{{ t('search.modal.time.updated') }} {{ formatDate(slide.updatedAt)
-                                            }}</span>
-                                    </div>
-                                </div>
+                            <div :class="[
+                                'flex-shrink-0 flex items-center transition-all duration-300',
+                                index === selectedResultIndex ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'
+                            ]">
+                                <span
+                                    class="text-[10px] font-semibold text-primary-500 mr-2 uppercase tracking-widest hidden sm:block"></span>
+                                <i class="pi pi-chevron-right text-primary-500"></i>
                             </div>
                         </div>
                     </div>
