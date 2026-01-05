@@ -4,7 +4,6 @@ import { setLanguage } from '@/i18n/index';
 import { t } from '@/i18n/index';
 import { useAppStore } from '@/store/website';
 import Popover from 'primevue/popover';
-import Listbox from 'primevue/listbox';
 import { useRoute, useRouter } from 'vue-router';
 import Menubar from 'primevue/menubar';
 import Button from 'primevue/button';
@@ -24,9 +23,6 @@ const localeOptions = computed(() => [
     { label: '简体中文', value: 'zh-CN' }
 ]);
 
-const selectedLocaleItem = computed(() => {
-    return localeOptions.value.find(option => option.value === appStore.locale);
-});
 
 const changeLocale = (event: any) => {
 

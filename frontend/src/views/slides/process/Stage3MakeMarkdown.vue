@@ -328,13 +328,6 @@ watch([isProcessing, error], ([processing, err]) => {
     }
 });
 
-const cancelProcessing = () => {
-    if (eventSource.value) {
-        eventSource.value.close();
-    }
-    router.push('/dashboard');
-};
-
 const previewSlide = async () => {
     const id = props.id;
     if (!id) {
