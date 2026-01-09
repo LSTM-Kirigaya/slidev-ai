@@ -22,9 +22,9 @@ services:
       - NODE_ENV=production
       - PORT=3001
       # LLM envs - please set your own values or mount .env.production
-      - OPENAI_API_KEY=sk-fe0d185c9e64458fbdfd91f333ee7e30
-      - OPENAI_BASE_URL=https://api.deepseek.com/v1
-      - OPENAI_MODEL=deepseek-chat
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - OPENAI_MODEL=${OPENAI_MODEL}
       # Allow CORS for frontend - 现在通过网关统一访问，同源不需要 CORS
       # - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:8080}
     volumes:
