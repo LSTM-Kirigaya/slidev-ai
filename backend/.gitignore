@@ -52,6 +52,7 @@ pids
 *.pid
 *.seed
 *.pid.lock
+data
 
 
 # Diagnostic reports (https://nodejs.org/api/report.html)

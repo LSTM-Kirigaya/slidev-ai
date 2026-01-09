@@ -22,6 +22,7 @@
         "test:e2e": "jest --config ./test/jest-e2e.json",
         "init-db": "node --loader ts-node/esm src/init-db.ts",
         "dev": "cross-env NODE_ENV=development nest start",
+        "launch": "cross-env NODE_ENV=development nest start",
         "create-admin": "ts-node src/scripts/create-admin.ts"
     },
     "dependencies": {

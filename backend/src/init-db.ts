@@ -1,70 +1,49 @@
 import { NestFactory } from '@nestjs/core';
 import { DataSource } from 'typeorm';
 import { AppModule } from './app.module';
-import { existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { existsSync, mkdirSync, statSync, unlinkSync } from 'fs';
+import { join, dirname } from 'path';
 
-async function initDatabase() {
+export async function initDatabase() {
     const isDev = process.env.NODE_ENV === 'development';
-    
-    // Get database configuration from environment or default
-    let dbPath: string;
-    if (process.env.DATABASE_PATH) {
-        dbPath = process.env.DATABASE_PATH;
+
+    // Get database configuration
+    const dbPath = 'database.sqlite';
+    const dbAbsolutePath = join(process.cwd(), dbPath);
+
+    // Check if database file exists, and handle the case where Docker created a directory instead of a file
+    if (existsSync(dbAbsolutePath)) {
+        const stats = statSync(dbAbsolutePath);
+        if (stats.isDirectory()) {
+            console.log(`❌ Found directory instead of database file at ${dbAbsolutePath}. Removing directory and will create database file.`);
+            // Remove the directory that was incorrectly created
+            unlinkSync(dbAbsolutePath);
+        } else {
+            console.log(`✅ Database file found at ${dbAbsolutePath}`);
+        }
     } else {
-        // Default to 'database.sqlite' in production, but could be configurable
-        dbPath = 'database.sqlite';
+        console.log(`Database file not found at ${dbAbsolutePath}, it will be created automatically.`);
     }
-    
-    const fullPath = join(process.cwd(), dbPath);
-    const dbDir = join(process.cwd(), ...dbPath.split('/').slice(0, -1)); // Extract directory path
-    
+
     // Ensure the directory for the database exists
-    if (dbDir && !existsSync(dbDir)) {
-        console.log(`Database directory does not exist at: ${dbDir}, creating it...`);
+    const dbDir = dirname(dbAbsolutePath);
+    if (!existsSync(dbDir)) {
         mkdirSync(dbDir, { recursive: true });
-        console.log('✅ Database directory created.');
-    }
-    
-    // Check if database file exists
-    if (!existsSync(fullPath)) {
-        console.log(`Database file does not exist at: ${fullPath}, it will be created automatically on first connection.`);
-    } else {
-        console.log(`✅ Database file found at: ${fullPath}`);
     }
 
     const app = await NestFactory.create(AppModule);
     const dataSource = app.get(DataSource);
 
-    // Connect to the database
-    if (!dataSource.isInitialized) {
-        await dataSource.initialize();
-        console.log('✅ Database connection established.');
-    }
-
-    // In non-production environments, synchronize schema
-    // In production, migrations should be used instead
+    // In production, we might want to run migrations instead of synchronize
     if (process.env.NODE_ENV !== 'production') {
-        await dataSource.synchronize(true);
-        console.log('✅ Database schema synchronized.');
+        await dataSource.synchronize();
+        console.log('✅ Database schema synchronized (development mode)');
     } else {
-        console.log('⚠️ Production mode: Schema synchronization skipped. Consider using migrations for production.');
-    }
-
-    // Test the connection by trying to get table names
-    try {
-        const entities = dataSource.entityMetadatas;
-        console.log(`✅ Connected to database with ${entities.length} entities registered.`);
-        
-        if (entities.length > 0) {
-            console.log('Registered entities:', entities.map(e => e.name).join(', '));
-        }
-    } catch (err) {
-        console.error('❌ Error verifying database connection:', err);
+        await dataSource.runMigrations();
+        console.log('⚠️ Production mode: Skipping auto-sync, recommend using migrations');
     }
 
     await app.close();
-    console.log('✅ Database initialization completed successfully.');
 }
 
 initDatabase().catch((error) => {
