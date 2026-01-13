@@ -7,6 +7,7 @@ WORKDIR /app
 
 # Install dependencies (with dev deps for build)
 COPY package.json yarn.lock* ./
+RUN yarn config set registry https://registry.npmmirror.com
 RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile; else yarn install --no-lockfile; fi
 
 # Copy source and build
@@ -106,6 +107,7 @@ WORKDIR /app
 # Install production dependencies only (activate Yarn via corepack)
 RUN corepack enable && corepack prepare yarn@1.22.22 --activate
 COPY package.json yarn.lock* ./
+RUN yarn config set registry https://registry.npmmirror.com
 RUN if [ -f yarn.lock ]; then yarn install --frozen-lockfile --production=true; else yarn install --production=true --no-lockfile; fi
 
 # Copy build output

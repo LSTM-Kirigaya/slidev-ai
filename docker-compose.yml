@@ -63,9 +63,6 @@ services:
         VITE_ENABLE_HTTPS: ${VITE_ENABLE_HTTPS:-false}
     image: slidev-ai-frontend:latest
     container_name: slidev-ai-frontend
-    # 不再对外暴露端口，通过网关访问
-    # ports:
-    #   - "8080:80"
     depends_on:
       - backend-nginx
     restart: unless-stopped
